@@ -1,7 +1,7 @@
 $rootFolder = Split-Path -parent $script:MyInvocation.MyCommand.Definition
 $nupkgsFolder = Join-Path $rootFolder "nupkgs"
 
-$versionSuffix = "CI{0:D4}" -f $env:BuildCounter
+$versionSuffix = "CI{0:D4}" -f [int]$env:BuildCounter
 
 dotnet restore
 dotnet build
