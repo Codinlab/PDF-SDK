@@ -5,4 +5,10 @@ $versionSuffix = "CI{0:D4}" -f [int]$env:BuildCounter
 
 dotnet restore
 dotnet build
-dotnet pack src/DocumentFormat.Pdf --output $nupkgsFolder --version-suffix $versionSuffix
+
+if($?) {
+	dotnet pack src/DocumentFormat.Pdf --output $nupkgsFolder --version-suffix $versionSuffix
+}
+else {
+	exit 1
+}

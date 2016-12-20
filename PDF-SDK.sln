@@ -16,6 +16,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{0A73BD20-D
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DocumentFormat.Pdf", "src\DocumentFormat.Pdf\DocumentFormat.Pdf.xproj", "{9B813D31-7139-4934-AEE8-424178483860}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "DocumentFormat.Pdf.Tests", "test\DocumentFormat.Pdf.Tests\DocumentFormat.Pdf.Tests.xproj", "{C3289E12-FD47-4FB9-B6FE-098CCB06E509}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,11 +28,16 @@ Global
 		{9B813D31-7139-4934-AEE8-424178483860}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B813D31-7139-4934-AEE8-424178483860}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B813D31-7139-4934-AEE8-424178483860}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3289E12-FD47-4FB9-B6FE-098CCB06E509}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3289E12-FD47-4FB9-B6FE-098CCB06E509}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3289E12-FD47-4FB9-B6FE-098CCB06E509}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3289E12-FD47-4FB9-B6FE-098CCB06E509}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9B813D31-7139-4934-AEE8-424178483860} = {3342AFB9-A9D4-4CC4-9A95-E246628B2DA0}
+		{C3289E12-FD47-4FB9-B6FE-098CCB06E509} = {0A73BD20-D796-4D4A-833D-8BED7DF3CFD0}
 	EndGlobalSection
 EndGlobal
