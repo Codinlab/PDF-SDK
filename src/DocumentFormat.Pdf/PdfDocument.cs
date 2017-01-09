@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DocumentFormat.Pdf.IO;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -9,16 +10,17 @@ namespace DocumentFormat.Pdf
     /// </summary>
     public class PdfDocument
     {
-        private const string pdfHeader = "%PDF";
+        public const string PdfHeader = "%PDF";
+        public const string PdfTrailer = "%%EOF";
 
-        private PdfVersion _version;
+        private PdfVersion _pdfVersion;
 
         /// <summary>
         /// Returns the PDF version of the document
         /// </summary>
-        public PdfVersion Version {
+        public PdfVersion PdfVersion {
             get {
-                return _version;
+                return _pdfVersion;
             }
         }
 
@@ -35,14 +37,10 @@ namespace DocumentFormat.Pdf
             if (!stream.CanRead)
                 throw new ArgumentException("Cannot read stream", nameof(stream));
 
-            // Checks header
-            using (StreamReader reader = new StreamReader(stream))
+            using (DocumentReader documentReader = new DocumentReader(stream))
             {
-                var header = await reader.ReadLineAsync();
-                if (header == null || !header.StartsWith(pdfHeader))
-                    throw new FormatException("Invalid file header");
-
-                var version = new PdfVersion(header.Substring(pdfHeader.Length).TrimStart('-'));
+                // Check header
+                var version = await documentReader.ReadPdfVersionAsync();
 
                 return new PdfDocument(version);
             }
@@ -50,7 +48,7 @@ namespace DocumentFormat.Pdf
 
         protected PdfDocument(PdfVersion version)
         {
-            _version = version;
+            _pdfVersion = version;
         }
     }
 }

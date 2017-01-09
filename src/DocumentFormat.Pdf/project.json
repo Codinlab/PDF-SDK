@@ -12,7 +12,8 @@
   },
 
   "dependencies": {
-    "System.IO": "4.3.0"
+    "System.IO": "4.3.0",
+    "System.Text.Encoding": "4.3.0"
   },
 
   "frameworks": {
