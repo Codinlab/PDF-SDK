@@ -1,4 +1,4 @@
-﻿{
+{
   "version": "1.0.0-*",
   "title": "DocumentFormat.Pdf.Core",
   "description": "Cross-platform library to work with Portable Document Format",
@@ -13,6 +13,7 @@
 
   "dependencies": {
     "System.IO": "4.3.0",
+    "System.Runtime.Extensions": "4.3.0",
     "System.Text.Encoding": "4.3.0"
   },
 
