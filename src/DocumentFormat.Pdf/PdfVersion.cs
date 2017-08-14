@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DocumentFormat.Pdf.Extensions;
+using DocumentFormat.Pdf.IO;
+using System;
 
 namespace DocumentFormat.Pdf
 {
@@ -7,8 +9,8 @@ namespace DocumentFormat.Pdf
     /// </summary>
     public struct PdfVersion : IComparable, IComparable<PdfVersion>, IEquatable<PdfVersion>
     {
-        private int _major;
-        private int _minor;
+        private int major;
+        private int minor;
 
         private const char separator = '.';
         private const int majorMin = 1;
@@ -18,11 +20,11 @@ namespace DocumentFormat.Pdf
         /// Gets or sets the Major version
         /// </summary>
         public int Major {
-            get { return _major; }
+            get { return major; }
             set {
                 if (value < majorMin)
                     throw new ArgumentOutOfRangeException();
-                _major = value;
+                major = value;
             }
         }
 
@@ -30,14 +32,19 @@ namespace DocumentFormat.Pdf
         /// Gets or sets the Minor version
         /// </summary>
         public int Minor {
-            get { return _minor; }
+            get { return minor; }
             set {
                 if (value < minorMin)
                     throw new ArgumentOutOfRangeException();
-                _minor = value;
+                minor = value;
             }
         }
 
+        /// <summary>
+        /// Instanciates PdfVersion from major and minor numbers
+        /// </summary>
+        /// <param name="major">Major number</param>
+        /// <param name="minor">Minor number</param>
         public PdfVersion(int major, int minor)
         {
             if (major < majorMin)
@@ -46,10 +53,14 @@ namespace DocumentFormat.Pdf
             if (minor < minorMin)
                 throw new ArgumentOutOfRangeException(nameof(minor));
 
-            _major = major;
-            _minor = minor;
+            this.major = major;
+            this.minor = minor;
         }
 
+        /// <summary>
+        /// Instanciates PdfVersion from version string (i.e.: "1.5")
+        /// </summary>
+        /// <param name="version">Version string</param>
         public PdfVersion(string version)
         {
             if (version == null)
@@ -60,27 +71,27 @@ namespace DocumentFormat.Pdf
             if (versionArray.Length < 2)
                 throw new ArgumentException("Version should specify a major and a minor version number.", nameof(version));
 
-            if (!int.TryParse(versionArray[0], out _major))
+            if (!int.TryParse(versionArray[0], out major))
                 throw new ArgumentException("Major version should be an integer.", nameof(version));
-            else if (_major < majorMin)
+            else if (major < majorMin)
                 throw new ArgumentException($"Major version should be greater than {majorMin}.", nameof(version));
 
-            if (!int.TryParse(versionArray[1], out _minor))
+            if (!int.TryParse(versionArray[1], out minor))
                 throw new ArgumentException("Minor version should be an integer.", nameof(version));
-            else if (_minor < minorMin)
+            else if (minor < minorMin)
                 throw new ArgumentException($"Minor version should be greater than {minorMin}.", nameof(version));
         }
 
         public int CompareTo(PdfVersion other)
         {
-            if (other.Major != _major)
-                if (other.Major > _major)
+            if (other.Major != major)
+                if (other.Major > major)
                     return -1;
                 else
                     return 1;
 
-            if (other.Minor != _minor)
-                if (other.Minor > _minor)
+            if (other.Minor != minor)
+                if (other.Minor > minor)
                     return -1;
                 else
                     return 1;
@@ -104,14 +115,69 @@ namespace DocumentFormat.Pdf
             }
         }
 
-        public bool Equals(PdfVersion other)
+        public override bool Equals(object obj)
         {
-            return other.Major == _major && other.Minor == _minor;
+            return obj is PdfVersion && this == (PdfVersion)obj;
         }
 
+        public override int GetHashCode()
+        {
+            return major.GetHashCode() ^ minor.GetHashCode();
+        }
+
+        public bool Equals(PdfVersion other)
+        {
+            return other.Major == major && other.Minor == minor;
+        }
+
+        /// <summary>
+        /// ToString method override
+        /// </summary>
+        /// <returns>String representation of current instance.</returns>
         public override string ToString()
         {
-            return string.Concat(_major, separator, _minor);
+            return string.Join(separator.ToString(), major, separator, minor);
+        }
+
+        /// <summary>
+        /// Equal operator
+        /// </summary>
+        /// <param name="a">Left value</param>
+        /// <param name="b">Right value</param>
+        /// <returns>True if a equals b, otherwise false.</returns>
+        public static bool operator ==(PdfVersion a, PdfVersion b)
+        {
+            return a.Major == b.Major && a.Minor == b.Minor;
+        }
+
+        /// <summary>
+        /// Not equal operator
+        /// </summary>
+        /// <param name="a">Left value</param>
+        /// <param name="b">Right value</param>
+        /// <returns>False if a equals b, otherwise true.</returns>
+        public static bool operator !=(PdfVersion a, PdfVersion b)
+        {
+            return a.Major != b.Major || a.Minor != b.Minor;
+        }
+
+        /// <summary>
+        /// Reads Pdf file's header and return Pdf Version.
+        /// </summary>
+        /// <param name="reader">The <see cref="PdfReader"/> to use.</param>
+        /// <returns>Pdf Version of the file.</returns>
+        public static PdfVersion FromReader(PdfReader reader)
+        {
+            if(reader == null)
+                throw new ArgumentNullException(nameof(reader));
+
+            reader.Position = 0;
+
+            var header = reader.ReadLine();
+            if (header == null || !header.StartsWith(PdfDocument.PdfHeader))
+                throw new FormatException("Invalid file header");
+
+            return new PdfVersion(header.Substring(PdfDocument.PdfHeader.Length));
         }
     }
 }
