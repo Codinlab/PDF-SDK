@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocumentFormat.Pdf", "src\D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentFormat.Pdf.Tests", "test\DocumentFormat.Pdf.Tests\DocumentFormat.Pdf.Tests.csproj", "{44C38973-C733-4472-A040-2B3DF83D291F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentFormat.Pdf.FunctionalTests", "test\DocumentFormat.Pdf.FunctionalTests\DocumentFormat.Pdf.FunctionalTests.csproj", "{D4F0E7B5-2B40-4E06-AA4F-7BED30E45C32}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,10 @@ Global
 		{44C38973-C733-4472-A040-2B3DF83D291F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44C38973-C733-4472-A040-2B3DF83D291F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44C38973-C733-4472-A040-2B3DF83D291F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4F0E7B5-2B40-4E06-AA4F-7BED30E45C32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4F0E7B5-2B40-4E06-AA4F-7BED30E45C32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4F0E7B5-2B40-4E06-AA4F-7BED30E45C32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4F0E7B5-2B40-4E06-AA4F-7BED30E45C32}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -32,5 +38,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{9B813D31-7139-4934-AEE8-424178483860} = {3342AFB9-A9D4-4CC4-9A95-E246628B2DA0}
 		{44C38973-C733-4472-A040-2B3DF83D291F} = {0A73BD20-D796-4D4A-833D-8BED7DF3CFD0}
+		{D4F0E7B5-2B40-4E06-AA4F-7BED30E45C32} = {0A73BD20-D796-4D4A-833D-8BED7DF3CFD0}
 	EndGlobalSection
 EndGlobal
