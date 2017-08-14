@@ -11,10 +11,6 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Codinlab/PDF-SDK.git</RepositoryUrl>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
-
 </Project>
