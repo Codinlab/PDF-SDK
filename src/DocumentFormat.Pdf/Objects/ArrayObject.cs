@@ -3,64 +3,66 @@ using DocumentFormat.Pdf.IO;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace DocumentFormat.Pdf.Objects
 {
     /// <summary>
-    /// Represents a Pdf Array Object
+    /// Represents a Pdf Array Object.
     /// </summary>
     public class ArrayObject : PdfObject, IEnumerable<PdfObject>
     {
         /// <summary>
-        /// ArrayObject's start token
+        /// ArrayObject's start token.
         /// </summary>
         public const char StartToken = '[';
 
         /// <summary>
-        /// ArrayObject's end token
+        /// ArrayObject's end token.
         /// </summary>
         public const char EndToken = ']';
 
-        private readonly List<PdfObject> internalList;
+        /// <summary>
+        /// Represents the internaly hold elements list.
+        /// </summary>
+        protected readonly List<PdfObject> internalList;
 
         /// <summary>
-        /// Instanciates a new StringObject
+        /// Instanciates a new StringObject.
         /// </summary>
-        /// <param name="items">Array items</param>
+        /// <param name="items">Array items.</param>
         public ArrayObject(IEnumerable<PdfObject> items)
         {
             internalList = new List<PdfObject>(items);
         }
 
         /// <summary>
-        /// Gets the number of objects in the array
+        /// Gets the number of objects in the array.
         /// </summary>
         public int Count => internalList.Count;
 
         /// <summary>
-        /// Gets items enumerator
+        /// Gets items enumerator.
         /// </summary>
-        /// <returns>items enumerator</returns>
+        /// <returns>items enumerator.</returns>
         public IEnumerator<PdfObject> GetEnumerator()
         {
             return internalList.GetEnumerator();
         }
 
         /// <summary>
-        /// gets items enumerator
+        /// gets items enumerator.
         /// </summary>
-        /// <returns>items enumerator</returns>
+        /// <returns>items enumerator.</returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return internalList.GetEnumerator();
         }
 
         /// <summary>
-        /// Creates an ArrayObject from PdfReader.
+        /// Creates an ArrayObject from PdfReader..
         /// </summary>
-        /// <param name="reader">The <see cref="PdfReader"/> to use</param>
-        /// <returns>Created ArrayObject</returns>
+        /// <param name="reader">The <see cref="PdfReader"/> to use.</param>
+        /// <returns>Created ArrayObject.</returns>
         public static ArrayObject FromReader(PdfReader reader)
         {
             if (reader == null)
