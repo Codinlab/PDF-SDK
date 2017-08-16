@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace DocumentFormat.Pdf.IO
 {
     /// <summary>
-    /// Represents a Pdf document reader
+    /// Represents a Pdf document reader.
     /// </summary>
     public class PdfReader
     {
@@ -30,7 +30,7 @@ namespace DocumentFormat.Pdf.IO
 
         #region Public Properties
         /// <summary>
-        /// Gets or sets the position of the reader in pdf stream
+        /// Gets or sets the position of the reader in pdf stream.
         /// </summary>
         public long Position {
             get {
@@ -66,18 +66,18 @@ namespace DocumentFormat.Pdf.IO
 
         #region Constructors
         /// <summary>
-        /// Initializes a new instance of PdfReader for the specified <see cref="Stream"/> with the default buffer size
+        /// Initializes a new instance of PdfReader for the specified <see cref="Stream"/> with the default buffer size.
         /// </summary>
-        /// <param name="pdfStream">Read <see cref="Stream"/></param>
+        /// <param name="pdfStream">Read <see cref="Stream"/>.</param>
         public PdfReader(Stream pdfStream) : this(pdfStream, DefaultBufferSize)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of PdfReader for the specified <see cref="Stream"/>
+        /// Initializes a new instance of PdfReader for the specified <see cref="Stream"/>.
         /// </summary>
-        /// <param name="pdfStream">Read <see cref="Stream"/></param>
-        /// <param name="bufferSize">Reader's buffer size</param>
+        /// <param name="pdfStream">Read <see cref="Stream"/>.</param>
+        /// <param name="bufferSize">Reader's buffer size.</param>
         public PdfReader(Stream pdfStream, int bufferSize)
         {
             this.pdfStream = pdfStream ?? throw new ArgumentNullException(nameof(pdfStream));
@@ -139,10 +139,10 @@ namespace DocumentFormat.Pdf.IO
         }
 
         /// <summary>
-        /// Returns the string of all accepted characters from PDF stream
+        /// Returns the string of all accepted characters from PDF stream.
         /// </summary>
-        /// <param name="acceptChar">Character evaluation function. Should return true to append character or false to stop capture</param>
-        /// <returns>Accepted characters string</returns>
+        /// <param name="acceptChar">Character evaluation function. Should return true to append character or false to stop capture.</param>
+        /// <returns>Accepted characters string.</returns>
         public string ReadWhile(Func<char, bool> acceptChar)
         {
             if(acceptChar == null)
@@ -227,9 +227,9 @@ namespace DocumentFormat.Pdf.IO
         }
 
         /// <summary>
-        /// Move forward in the PDF stream to the first non-skipped character
+        /// Move forward in the PDF stream to the first non-skipped character.
         /// </summary>
-        /// <param name="skipChar">Character evaluation function. Should return true to skip character or false to stop at character position</param>
+        /// <param name="skipChar">Character evaluation function. Should return true to skip character or false to stop at character position.</param>
         public void SkipWhile(Func<char, bool> skipChar)
         {
             if (skipChar == null)
@@ -256,18 +256,18 @@ namespace DocumentFormat.Pdf.IO
         /// and advances the position within the stream by the number of bytes read.
         /// </summary>
         /// <param name="buffer">The array of bytes to write to.</param>
-        /// <param name="index">The zero-based byte offset in buffer at which to begin storing the data read from the stream.</param>
+        /// <param name="offset">The zero-based byte offset in buffer at which to begin storing the data read from the stream.</param>
         /// <param name="count">The maximum number of bytes to be read from the current stream.</param>
         /// <returns>The total number of bytes read into the buffer.</returns>
-        public int Read(byte[] buffer, int index, int count)
+        public int Read(byte[] buffer, int offset, int count)
         {
             if (buffer == null)
                 throw new ArgumentNullException(nameof(buffer));
-            if (index < 0)
-                throw new ArgumentOutOfRangeException(nameof(index), "Cannot be negative");
+            if (offset < 0)
+                throw new ArgumentOutOfRangeException(nameof(offset), "Cannot be negative");
             if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count), "Cannot be negative");
-            if (buffer.Length - index < count)
+            if (buffer.Length - offset < count)
                 throw new ArgumentException("Invalid buffer length");
 
             int read = 0;
@@ -275,13 +275,13 @@ namespace DocumentFormat.Pdf.IO
             {
                 // Read from buffer
                 read = readLen - readPos >= count ? count : readLen - readPos;
-                Buffer.BlockCopy(byteBuffer, readPos, buffer, index, read);
+                Buffer.BlockCopy(byteBuffer, readPos, buffer, offset, read);
                 readPos += read;
             }
             if (read < count)
             {
                 // Direct read
-                read += pdfStream.Read(buffer, index + read, count - read);
+                read += pdfStream.Read(buffer, offset + read, count - read);
             }
             return read;
         }
@@ -291,18 +291,18 @@ namespace DocumentFormat.Pdf.IO
         /// and advances the position within the stream by the number of characters read.
         /// </summary>
         /// <param name="buffer">The array of characters to write to.</param>
-        /// <param name="index">The zero-based byte offset in buffer at which to begin storing the data read from the stream.</param>
+        /// <param name="offset">The zero-based byte offset in buffer at which to begin storing the data read from the stream.</param>
         /// <param name="count">The maximum number of characters to be read from the current stream.</param>
         /// <returns>The total number of characters read into the buffer.</returns>
-        public int Read(char[] buffer, int index, int count)
+        public int Read(char[] buffer, int offset, int count)
         {
             if (buffer == null)
                 throw new ArgumentNullException(nameof(buffer));
-            if (index < 0)
-                throw new ArgumentOutOfRangeException(nameof(index), "Cannot be negative");
+            if (offset < 0)
+                throw new ArgumentOutOfRangeException(nameof(offset), "Cannot be negative");
             if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count), "Cannot be negative");
-            if (buffer.Length - index < count)
+            if (buffer.Length - offset < count)
                 throw new ArgumentException("Invalid buffer length");
 
             EnsureBufferFilled();
@@ -312,8 +312,8 @@ namespace DocumentFormat.Pdf.IO
             {
                 // Read from buffer
                 read = readLen - readPos >= count ? count : readLen - readPos;
-                Buffer.BlockCopy(charBuffer, readPos * 2, buffer, index * 2, read * 2);
-                index += read;
+                Buffer.BlockCopy(charBuffer, readPos * 2, buffer, offset * 2, read * 2);
+                offset += read;
                 readPos += read;
             }
             while (read < count && FillBuffer() > 0);
