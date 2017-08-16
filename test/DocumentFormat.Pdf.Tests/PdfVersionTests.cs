@@ -13,6 +13,54 @@ namespace DocumentFormat.Pdf.Tests
             return new MemoryStream(Encoding.GetEncoding("ASCII").GetBytes(content));
         }
 
+        private static string ReadAsString(Stream stream)
+        {
+            var buffer = new byte[stream.Length];
+            stream.Seek(0, SeekOrigin.Begin);
+            stream.Read(buffer, 0, buffer.Length);
+            return Encoding.GetEncoding("ASCII").GetString(buffer);
+        }
+
+        [Fact]
+        public void WritesPdfVersion()
+        {
+            // Arrange
+            var version = new PdfVersion(1, 2);
+            string writed;
+
+            // Act
+            using (var pdfStream = new MemoryStream())
+            {
+                var writer = new PdfWriter(pdfStream);
+                version.Write(writer);
+                writer.Flush();
+                writed = ReadAsString(pdfStream);
+            }
+
+            // Assert
+            Assert.Equal("1.2", writed);
+        }
+
+        [Fact]
+        public void WritesPdfHeader()
+        {
+            // Arrange
+            var version = new PdfVersion(1, 2);
+            string writed;
+
+            // Act
+            using (var pdfStream = new MemoryStream())
+            {
+                var writer = new PdfWriter(pdfStream);
+                version.WriteHeader(writer);
+                writer.Flush();
+                writed = ReadAsString(pdfStream);
+            }
+
+            // Assert
+            Assert.Equal("%PDF-1.2\r\n", writed);
+        }
+
         [Theory]
         [InlineData(" %PDF-1.6\r\n")]
         [InlineData("%PDF1.6\r\n")]

@@ -82,6 +82,30 @@ namespace DocumentFormat.Pdf
                 throw new ArgumentException($"Minor version should be greater than {minorMin}.", nameof(version));
         }
 
+        /// <summary>
+        /// Writes PdfVersion.
+        /// </summary>
+        /// <param name="writer">The <see cref="PdfWriter"/> to use.</param>
+        public void Write(PdfWriter writer)
+        {
+            if (writer == null)
+                throw new ArgumentNullException(nameof(writer));
+
+            writer.Write(ToString());
+        }
+
+        /// <summary>
+        /// Writes PDF header with current PdfVersion.
+        /// </summary>
+        /// <param name="writer">The <see cref="PdfWriter"/> to use.</param>
+        public void WriteHeader(PdfWriter writer)
+        {
+            if (writer == null)
+                throw new ArgumentNullException(nameof(writer));
+
+            writer.WriteLine(PdfDocument.PdfHeader + ToString());
+        }
+
         public int CompareTo(PdfVersion other)
         {
             if (other.Major != major)
@@ -136,7 +160,7 @@ namespace DocumentFormat.Pdf
         /// <returns>String representation of current instance.</returns>
         public override string ToString()
         {
-            return string.Join(separator.ToString(), major, separator, minor);
+            return string.Join(separator.ToString(), major, minor);
         }
 
         /// <summary>
