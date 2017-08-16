@@ -16,17 +16,17 @@ namespace DocumentFormat.Pdf.Structure
         /// </summary>
         public const string StartKeyword = "trailer";
 
-        private const string SizeKey = "Size";
-        private const string PrevKey = "Prev";
-        private const string RootKey = "Root";
-        private const string EncryptKey = "Encrypt";
-        private const string InfoKey = "Info";
-        private const string IdKey = "ID";
+        internal const string SizeKey = "Size";
+        internal const string PrevKey = "Prev";
+        internal const string RootKey = "Root";
+        internal const string EncryptKey = "Encrypt";
+        internal const string InfoKey = "Info";
+        internal const string IdKey = "ID";
 
         /// <summary>
-        /// Instanciates a new StringObject
+        /// Instanciates a new StringObject.
         /// </summary>
-        /// <param name="items">Trailer items</param>
+        /// <param name="items">Trailer items.</param>
         public PdfTrailer(IDictionary<string, PdfObject> items) : base(items)
         {
         }
@@ -50,7 +50,7 @@ namespace DocumentFormat.Pdf.Structure
         /// <summary>
         /// The document’s encryption dictionary.
         /// </summary>
-        public IReadOnlyDictionary<string, PdfObject> Encrypt => (internalDictionary[EncryptKey] as DictionaryObject);
+        public IReadOnlyDictionary<string, PdfObject> Encrypt => internalDictionary.ContainsKey(EncryptKey) ? (internalDictionary[EncryptKey] as DictionaryObject) : null;
 
         /// <summary>
         /// The document’s information dictionary.
