@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DocumentFormat.Pdf.IO;
+using System;
 
 namespace DocumentFormat.Pdf.Objects
 {
@@ -27,5 +28,19 @@ namespace DocumentFormat.Pdf.Objects
         /// Gets the object's value converted to float
         /// </summary>
         public override float RealValue => Convert.ToSingle(value);
+
+        /// <summary>
+        /// Writes object to the current stream.
+        /// </summary>
+        /// <param name="writer">The <see cref="PdfWriter"/> to use.</param>
+        public override void Write(PdfWriter writer)
+        {
+            if (writer == null)
+                throw new ArgumentNullException(nameof(writer));
+
+            // TODO : Implement Write method
+
+            throw new NotImplementedException();
+        }
     }
 }

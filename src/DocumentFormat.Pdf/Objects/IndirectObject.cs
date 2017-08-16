@@ -50,6 +50,20 @@ namespace DocumentFormat.Pdf.Objects
         public PdfObject Object => referencedObject;
 
         /// <summary>
+        /// Writes object to the current stream.
+        /// </summary>
+        /// <param name="writer">The <see cref="PdfWriter"/> to use.</param>
+        public override void Write(PdfWriter writer)
+        {
+            if (writer == null)
+                throw new ArgumentNullException(nameof(writer));
+
+            // TODO : Implement Write method
+
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// Creates a IndirectObject from PdfReader.
         /// </summary>
         /// <param name="reader">The <see cref="PdfReader"/> to use</param>

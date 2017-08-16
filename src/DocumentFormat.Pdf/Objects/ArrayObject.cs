@@ -59,7 +59,21 @@ namespace DocumentFormat.Pdf.Objects
         }
 
         /// <summary>
-        /// Creates an ArrayObject from PdfReader..
+        /// Writes object to the current stream.
+        /// </summary>
+        /// <param name="writer">The <see cref="PdfWriter"/> to use.</param>
+        public override void Write(PdfWriter writer)
+        {
+            if (writer == null)
+                throw new ArgumentNullException(nameof(writer));
+
+            // TODO : Implement Write method
+
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Creates an ArrayObject from PdfReader.
         /// </summary>
         /// <param name="reader">The <see cref="PdfReader"/> to use.</param>
         /// <returns>Created ArrayObject.</returns>

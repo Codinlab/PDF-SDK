@@ -37,5 +37,19 @@ namespace DocumentFormat.Pdf.Objects
         public bool Value {
             get => value;
         }
+
+        /// <summary>
+        /// Writes object to the current stream.
+        /// </summary>
+        /// <param name="writer">The <see cref="PdfWriter"/> to use.</param>
+        public override void Write(PdfWriter writer)
+        {
+            if (writer == null)
+                throw new ArgumentNullException(nameof(writer));
+
+            // TODO : Implement Write method
+
+            throw new NotImplementedException();
+        }
     }
 }
