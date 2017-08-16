@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace DocumentFormat.Pdf.Objects
 {
     /// <summary>
-    /// Represents a Pdf Array Object
+    /// Represents a Pdf Dictionary Object
     /// </summary>
     public class DictionaryObject : PdfObject, IReadOnlyDictionary<string, PdfObject>
     {
@@ -22,6 +22,11 @@ namespace DocumentFormat.Pdf.Objects
         /// DictionaryObject's end token
         /// </summary>
         public const string EndToken = ">>";
+
+        /// <summary>
+        /// The Type key name
+        /// </summary>
+        protected const string TypeKey = "Type";
 
         /// <summary>
         /// Represents the internaly hold elements dictionary

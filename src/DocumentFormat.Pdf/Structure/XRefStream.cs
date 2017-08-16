@@ -12,22 +12,17 @@ namespace DocumentFormat.Pdf.Structure
     public class XRefStream : StreamObject, IPdfTrailer
     {
         /// <summary>
-        /// The Type key name
-        /// </summary>
-        private const string TypeKey = "Type";
-
-        /// <summary>
-        /// The Type entry value
+        /// The Type entry value.
         /// </summary>
         private const string TypeValue = "XRef";
 
         /// <summary>
-        /// The Index key name
+        /// The Index key name.
         /// </summary>
         private const string IndexKey = "Index";
 
         /// <summary>
-        /// The W key name
+        /// The W key name.
         /// </summary>
         private const string WKey = "W";
 
