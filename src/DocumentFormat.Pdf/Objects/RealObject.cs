@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.Pdf.IO;
 using System;
+using System.Globalization;
 
 namespace DocumentFormat.Pdf.Objects
 {
@@ -38,9 +39,7 @@ namespace DocumentFormat.Pdf.Objects
             if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
 
-            // TODO : Implement Write method
-
-            throw new NotImplementedException();
+            writer.Write(value.ToString(CultureInfo.InvariantCulture));
         }
     }
 }
