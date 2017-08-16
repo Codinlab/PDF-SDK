@@ -21,9 +21,14 @@ namespace DocumentFormat.Pdf.Objects
         public const string EndKeyword = "endstream";
 
         /// <summary>
-        /// The length key name
+        /// The Length key name
         /// </summary>
         public const string LengthKey = "Length";
+
+        /// <summary>
+        /// The Filter key name
+        /// </summary>
+        public const string FilterKey = "Filter";
 
         private long? position;
 
@@ -49,6 +54,11 @@ namespace DocumentFormat.Pdf.Objects
         /// Gets the stream length
         /// </summary>
         public int Length => (internalDictionary[LengthKey] as IntegerObject).IntergerValue;
+
+        /// <summary>
+        /// Gets the name of the filter applied to data
+        /// </summary>
+        public PdfObject Filter => internalDictionary.ContainsKey(FilterKey) ? internalDictionary[FilterKey] : null;
 
         /// <summary>
         /// Gets the stream position in document stream
