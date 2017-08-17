@@ -144,7 +144,7 @@ namespace DocumentFormat.Pdf.Extensions
                     reader.ReadToken(NullObject.NullToken);
                     return new NullObject();
                 case '(':
-                    return StringObject.LiteralFromReader(reader);
+                    return LiteralStringObject.FromReader(reader);
                 case '<':
                     if (reader.Peek(1) == '<')
                     {
@@ -152,7 +152,7 @@ namespace DocumentFormat.Pdf.Extensions
                     }
                     else
                     {
-                        return StringObject.HexadecimalFromReader(reader);
+                        return HexadecimalStringObject.FromReader(reader);
                     }
                 case '/':
                     return NameObject.FromReader(reader);

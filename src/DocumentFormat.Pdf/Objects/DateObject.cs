@@ -5,9 +5,9 @@ namespace DocumentFormat.Pdf.Objects
     /// <summary>
     /// Represents a Pdf Date Object.
     /// </summary>
-    public class DateObject : StringObject
+    public class DateObject : LiteralStringObject
     {
-        private DateTimeOffset value;
+        private DateTimeOffset dateValue;
 
         /// <summary>
         /// Instanciates a new DateObject from its string representation.
@@ -15,7 +15,7 @@ namespace DocumentFormat.Pdf.Objects
         /// <param name="value">The date string.</param>
         public DateObject(string value) : base(value)
         {
-            this.value = Parse(value);
+            dateValue = Parse(value);
         }
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace DocumentFormat.Pdf.Objects
         /// <param name="value">The date value.</param>
         public DateObject(DateTimeOffset value) : base(Format(value))
         {
-            this.value = value;
+            dateValue = value;
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace DocumentFormat.Pdf.Objects
         /// <summary>
         /// Gets the object's value.
         /// </summary>
-        public DateTimeOffset Value => value;
+        public DateTimeOffset Value => dateValue;
 
         private static string Format(DateTimeOffset value)
         {
