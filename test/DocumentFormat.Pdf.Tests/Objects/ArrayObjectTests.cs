@@ -1,9 +1,7 @@
 ﻿using DocumentFormat.Pdf.IO;
 using DocumentFormat.Pdf.Objects;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace DocumentFormat.Pdf.Tests.Objects
@@ -42,10 +40,12 @@ namespace DocumentFormat.Pdf.Tests.Objects
             // Act
             using (var stream = BuildTestStream(streamContent))
             {
-                var reader = new PdfReader(stream);
-                reader.Position = 0;
-                arrayObj = ArrayObject.FromReader(reader);
-                position = reader.Position;
+                using (var reader = new PdfReader(stream))
+                {
+                    reader.Position = 0;
+                    arrayObj = ArrayObject.FromReader(reader);
+                    position = reader.Position;
+                }
             }
 
             // Assert
@@ -69,10 +69,12 @@ namespace DocumentFormat.Pdf.Tests.Objects
             // Act
             using (var pdfStream = new MemoryStream())
             {
-                var writer = new PdfWriter(pdfStream);
-                arrayObj.Write(writer);
-                writer.Flush();
-                result = ReadAsString(pdfStream);
+                using (var writer = new PdfWriter(pdfStream))
+                {
+                    arrayObj.Write(writer);
+                    writer.Flush();
+                    result = ReadAsString(pdfStream);
+                }
             }
 
             // Assert

@@ -26,10 +26,12 @@ namespace DocumentFormat.Pdf.Tests.Objects
             // Act
             using (var pdfStream = new MemoryStream())
             {
-                var writer = new PdfWriter(pdfStream);
-                stringObj.Write(writer);
-                writer.Flush();
-                result = ReadAsString(pdfStream);
+                using (var writer = new PdfWriter(pdfStream))
+                {
+                    stringObj.Write(writer);
+                    writer.Flush();
+                    result = ReadAsString(pdfStream);
+                }
             }
 
             // Assert

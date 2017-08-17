@@ -41,10 +41,12 @@ namespace DocumentFormat.Pdf.Tests.Objects
             // Act
             using (var stream = BuildTestStream(streamContent))
             {
-                var reader = new PdfReader(stream);
-                reader.Position = 0;
-                nameObj = NameObject.FromReader(reader);
-                position = reader.Position;
+                using (var reader = new PdfReader(stream))
+                {
+                    reader.Position = 0;
+                    nameObj = NameObject.FromReader(reader);
+                    position = reader.Position;
+                }
             }
 
             // Assert
@@ -63,10 +65,12 @@ namespace DocumentFormat.Pdf.Tests.Objects
             // Act
             using (var pdfStream = new MemoryStream())
             {
-                var writer = new PdfWriter(pdfStream);
-                nameObj.Write(writer);
-                writer.Flush();
-                result = ReadAsString(pdfStream);
+                using (var writer = new PdfWriter(pdfStream))
+                {
+                    nameObj.Write(writer);
+                    writer.Flush();
+                    result = ReadAsString(pdfStream);
+                }
             }
 
             // Assert

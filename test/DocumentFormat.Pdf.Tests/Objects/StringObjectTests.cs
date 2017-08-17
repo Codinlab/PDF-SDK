@@ -35,10 +35,12 @@ namespace DocumentFormat.Pdf.Tests.Objects
             // Act
             using (var stream = BuildTestStream(streamContent))
             {
-                var reader = new PdfReader(stream);
-                reader.Position = 0;
-                stringObj = StringObject.FromReader(reader);
-                position = reader.Position;
+                using (var reader = new PdfReader(stream))
+                {
+                    reader.Position = 0;
+                    stringObj = StringObject.FromReader(reader);
+                    position = reader.Position;
+                }
             }
 
             // Assert

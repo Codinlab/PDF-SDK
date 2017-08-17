@@ -8,15 +8,17 @@ namespace DocumentFormat.Pdf.IO
     /// <summary>
     /// Represents a Pdf document reader.
     /// </summary>
-    public class PdfReader
+    public class PdfReader : IDisposable
     {
         private static Encoding encoding = Encoding.GetEncoding("ASCII");
 
         internal static int DefaultBufferSize => 1024;
 
-        private readonly Decoder decoder;
+        private bool disposed = false;
+
+        private Decoder decoder;
         
-        private readonly Stream pdfStream;
+        private Stream pdfStream;
 
         private byte[] byteBuffer;
         private char[] charBuffer;
@@ -399,6 +401,41 @@ namespace DocumentFormat.Pdf.IO
             decoder.GetChars(byteBuffer, readLen, read, charBuffer, readLen);
             readLen += read;
             return read;
+        }
+
+        #endregion
+
+        #region IDisposable
+        /// <summary>
+        /// Disposes the PdfReader.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Releases PdfReader ressources
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+
+            if (disposing)
+            {
+                // Free managed ressources
+                pdfStream = null;
+                decoder = null;
+                byteBuffer = null;
+                charBuffer = null;
+                readPos = 0;
+                readLen = 0;
+            }
+
+            disposed = true;
         }
 
         #endregion

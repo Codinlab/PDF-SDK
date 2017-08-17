@@ -56,42 +56,44 @@ namespace DocumentFormat.Pdf
                 throw new ArgumentException("Cannot read stream", nameof(stream));
 
             var document = new PdfDocument(stream);
-            var reader = new PdfReader(stream);
 
-            // Check header
-            document.pdfVersion = PdfVersion.FromReader(reader);
-
-            // Check trailer
-            reader.Position = reader.GetXRefPosition();
-
-            // Read Cross-Reference Table
-            document.xrefTable = new XRefTable();
-            IPdfTrailer trailer;
-            string fisrtLine;
-
-            do
+            using (var reader = new PdfReader(stream))
             {
-                fisrtLine = reader.ReadLine();
-                if (fisrtLine == XRefTable.StartKeyword)
+                // Check header
+                document.pdfVersion = PdfVersion.FromReader(reader);
+
+                // Check trailer
+                reader.Position = reader.GetXRefPosition();
+
+                // Read Cross-Reference Table
+                document.xrefTable = new XRefTable();
+                IPdfTrailer trailer;
+                string fisrtLine;
+
+                do
                 {
-                    document.xrefTable.ReadSection(reader);
-                    trailer = PdfTrailer.FromReader(reader);
-                    if(document.trailer == null)
+                    fisrtLine = reader.ReadLine();
+                    if (fisrtLine == XRefTable.StartKeyword)
                     {
-                        document.trailer = trailer;
+                        document.xrefTable.ReadSection(reader);
+                        trailer = PdfTrailer.FromReader(reader);
+                        if (document.trailer == null)
+                        {
+                            document.trailer = trailer;
+                        }
+                    }
+                    else
+                    {
+                        // Cross-Reference Stream
+                        throw new NotImplementedException();
+                    }
+                    if (trailer.Prev.HasValue)
+                    {
+                        reader.Position = trailer.Prev.Value;
                     }
                 }
-                else
-                {
-                    // Cross-Reference Stream
-                    throw new NotImplementedException();
-                }
-                if (trailer.Prev.HasValue)
-                {
-                    reader.Position = trailer.Prev.Value;
-                }
+                while (trailer.Prev != null);
             }
-            while (trailer.Prev != null);
 
             return document;
         }

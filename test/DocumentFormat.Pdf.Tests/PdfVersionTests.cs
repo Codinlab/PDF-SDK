@@ -31,10 +31,12 @@ namespace DocumentFormat.Pdf.Tests
             // Act
             using (var pdfStream = new MemoryStream())
             {
-                var writer = new PdfWriter(pdfStream);
-                version.Write(writer);
-                writer.Flush();
-                result = ReadAsString(pdfStream);
+                using (var writer = new PdfWriter(pdfStream))
+                {
+                    version.Write(writer);
+                    writer.Flush();
+                    result = ReadAsString(pdfStream);
+                }
             }
 
             // Assert
@@ -51,10 +53,12 @@ namespace DocumentFormat.Pdf.Tests
             // Act
             using (var pdfStream = new MemoryStream())
             {
-                var writer = new PdfWriter(pdfStream);
-                version.WriteHeader(writer);
-                writer.Flush();
-                result = ReadAsString(pdfStream);
+                using (var writer = new PdfWriter(pdfStream))
+                {
+                    version.WriteHeader(writer);
+                    writer.Flush();
+                    result = ReadAsString(pdfStream);
+                }
             }
 
             // Assert
@@ -74,8 +78,10 @@ namespace DocumentFormat.Pdf.Tests
             // Assert
             using (var pdfStream = BuildTestStream(header))
             {
-                var reader = new PdfReader(pdfStream);
-                Assert.Throws<FormatException>(() => PdfVersion.FromReader(reader));
+                using (var reader = new PdfReader(pdfStream))
+                {
+                    Assert.Throws<FormatException>(() => PdfVersion.FromReader(reader));
+                }
             }
         }
 
@@ -88,8 +94,10 @@ namespace DocumentFormat.Pdf.Tests
             // Act
             using (var pdfStream = BuildTestStream("%PDF-1.6\r\n"))
             {
-                var reader = new PdfReader(pdfStream);
-                version = PdfVersion.FromReader(reader);
+                using (var reader = new PdfReader(pdfStream))
+                {
+                    version = PdfVersion.FromReader(reader);
+                }
             }
 
             // Assert
@@ -107,9 +115,11 @@ namespace DocumentFormat.Pdf.Tests
             // Act
             using (var pdfStream = BuildTestStream("%PDF-1.4\r\nSome Content\r\n%PDF-1.6\r\n"))
             {
-                var reader = new PdfReader(pdfStream);
-                reader.Position = 22;
-                version = PdfVersion.FromReader(reader);
+                using (var reader = new PdfReader(pdfStream))
+                {
+                    reader.Position = 22;
+                    version = PdfVersion.FromReader(reader);
+                }
             }
 
             // Assert

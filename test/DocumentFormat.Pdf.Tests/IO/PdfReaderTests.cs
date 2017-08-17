@@ -33,9 +33,11 @@ namespace DocumentFormat.Pdf.Tests.IO
             // Act
             using (var pdfStream = BuildTestStream("abcdef"))
             {
-                var reader = new PdfReader(pdfStream);
-                reader.Position = 2;
-                peeked = reader.Peek();
+                using (var reader = new PdfReader(pdfStream))
+                {
+                    reader.Position = 2;
+                    peeked = reader.Peek();
+                }
             }
 
             // Assert
@@ -52,10 +54,12 @@ namespace DocumentFormat.Pdf.Tests.IO
             // Act
             using (var pdfStream = BuildTestStream("abcdef"))
             {
-                var reader = new PdfReader(pdfStream);
-                reader.Position = 3;
-                peeked = reader.Peek();
-                returnPosition = reader.Position;
+                using (var reader = new PdfReader(pdfStream))
+                {
+                    reader.Position = 3;
+                    peeked = reader.Peek();
+                    returnPosition = reader.Position;
+                }
             }
 
             // Assert
@@ -72,9 +76,11 @@ namespace DocumentFormat.Pdf.Tests.IO
             // Act
             using (var pdfStream = BuildTestStream("abcdef"))
             {
-                var reader = new PdfReader(pdfStream);
-                reader.Position = 2;
-                peeked = reader.Read();
+                using (var reader = new PdfReader(pdfStream))
+                {
+                    reader.Position = 2;
+                    peeked = reader.Read();
+                }
             }
 
             // Assert
@@ -91,10 +97,12 @@ namespace DocumentFormat.Pdf.Tests.IO
             // Act
             using (var pdfStream = BuildTestStream("abcdef"))
             {
-                var reader = new PdfReader(pdfStream);
-                reader.Position = 3;
-                peeked = reader.Read();
-                returnPosition = reader.Position;
+                using (var reader = new PdfReader(pdfStream))
+                {
+                    reader.Position = 3;
+                    peeked = reader.Read();
+                    returnPosition = reader.Position;
+                }
             }
 
             // Assert
@@ -111,9 +119,11 @@ namespace DocumentFormat.Pdf.Tests.IO
             // Act
             using (var pdfStream = BuildTestStream("abcdef"))
             {
-                var reader = new PdfReader(pdfStream);
-                reader.Position = 2;
-                read = reader.ReadWhile(c => c != 'f');
+                using (var reader = new PdfReader(pdfStream))
+                {
+                    reader.Position = 2;
+                    read = reader.ReadWhile(c => c != 'f');
+                }
             }
 
             // Assert
@@ -130,10 +140,12 @@ namespace DocumentFormat.Pdf.Tests.IO
             // Act
             using (var pdfStream = BuildTestStream("abcdef"))
             {
-                var reader = new PdfReader(pdfStream);
-                reader.Position = 3;
-                read = reader.ReadWhile(c => c != 'f');
-                returnPosition = reader.Position;
+                using (var reader = new PdfReader(pdfStream))
+                {
+                    reader.Position = 3;
+                    read = reader.ReadWhile(c => c != 'f');
+                    returnPosition = reader.Position;
+                }
             }
 
             // Assert
@@ -151,10 +163,12 @@ namespace DocumentFormat.Pdf.Tests.IO
             // Act
             using (var pdfStream = BuildTestStream("abcdefghijklmnopqrstuvwxyz"))
             {
-                var reader = new PdfReader(pdfStream, 4);   // Small buffer to force buffer rotation
-                reader.Position = 3;
-                read = reader.ReadWhile(c => c != 'x');
-                returnPosition = reader.Position;
+                using (var reader = new PdfReader(pdfStream, 4))    // Small buffer to force buffer rotation
+                {
+                    reader.Position = 3;
+                    read = reader.ReadWhile(c => c != 'x');
+                    returnPosition = reader.Position;
+                }
             }
 
             // Assert
@@ -171,10 +185,12 @@ namespace DocumentFormat.Pdf.Tests.IO
             // Act
             using (var pdfStream = BuildTestStream("abcdef"))
             {
-                var reader = new PdfReader(pdfStream);
-                reader.Position = 0;
-                reader.SkipWhile(c => c != 'f');
-                returnPosition = reader.Position;
+                using (var reader = new PdfReader(pdfStream))
+                {
+                    reader.Position = 0;
+                    reader.SkipWhile(c => c != 'f');
+                    returnPosition = reader.Position;
+                }
             }
 
             // Assert
@@ -190,10 +206,12 @@ namespace DocumentFormat.Pdf.Tests.IO
             // Act
             using (var pdfStream = BuildTestStream("abcdefabcdef"))
             {
-                var reader = new PdfReader(pdfStream);
-                reader.Position = 2;
-                reader.SkipWhile(c => c != 'a');
-                returnPosition = reader.Position;
+                using (var reader = new PdfReader(pdfStream))
+                {
+                    reader.Position = 2;
+                    reader.SkipWhile(c => c != 'a');
+                    returnPosition = reader.Position;
+                }
             }
 
             // Assert
@@ -209,10 +227,12 @@ namespace DocumentFormat.Pdf.Tests.IO
             // Act
             using (var pdfStream = BuildTestStream("abcdefghijklmnopqrstuvwxyz"))
             {
-                var reader = new PdfReader(pdfStream, 4);   // Small buffer to force buffer rotation
-                reader.Position = 0;
-                reader.SkipWhile(c => c != 'x');
-                returnPosition = reader.Position;
+                using (var reader = new PdfReader(pdfStream, 4))    // Small buffer to force buffer rotation
+                {
+                    reader.Position = 0;
+                    reader.SkipWhile(c => c != 'x');
+                    returnPosition = reader.Position;
+                }
             }
 
             // Assert
@@ -237,12 +257,14 @@ namespace DocumentFormat.Pdf.Tests.IO
                 pdfStream.Write(byteData, 0, byteData.Length);
                 pdfStream.Flush();
 
-                var reader = new PdfReader(pdfStream);
-                reader.Position = 0;
+                using (var reader = new PdfReader(pdfStream))
+                {
+                    reader.Position = 0;
 
-                // Act
-                read = reader.Read(byteData, 10, 20);
-                returnPosition = reader.Position;
+                    // Act
+                    read = reader.Read(byteData, 10, 20);
+                    returnPosition = reader.Position;
+                }
             }
 
             // Assert
@@ -265,12 +287,14 @@ namespace DocumentFormat.Pdf.Tests.IO
 
             using (var pdfStream = BuildTestStream("abcdefghijklmnopqrstuvwxyz"))
             {
-                var reader = new PdfReader(pdfStream);
-                reader.Position = 5;
+                using (var reader = new PdfReader(pdfStream))
+                {
+                    reader.Position = 5;
 
-                // Act
-                read = reader.Read(charData, 10, 20);
-                returnPosition = reader.Position;
+                    // Act
+                    read = reader.Read(charData, 10, 20);
+                    returnPosition = reader.Position;
+                }
             }
 
             var readString = new string(charData, 10, 20);

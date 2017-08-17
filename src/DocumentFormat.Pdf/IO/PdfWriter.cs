@@ -7,13 +7,15 @@ namespace DocumentFormat.Pdf.IO
     /// <summary>
     /// Represents a Pdf document reader
     /// </summary>
-    public class PdfWriter
+    public class PdfWriter : IDisposable
     {
         private static Encoding encoding = Encoding.GetEncoding("ASCII");
 
-        private readonly Encoder encoder;
+        private bool disposed = false;
 
-        private readonly Stream pdfStream;
+        private Encoder encoder;
+
+        private Stream pdfStream;
 
         private readonly byte[] EOL;
 
@@ -128,9 +130,54 @@ namespace DocumentFormat.Pdf.IO
             WriteLine();
         }
 
+        /// <summary>
+        /// Clears all buffers and causes any buffered data to be written to the stream.
+        /// </summary>
         public void Flush()
         {
             pdfStream.Flush();
         }
+
+        #region IDisposable
+        /// <summary>
+        /// Disposes the PdfReader.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Releases PdfReader ressources
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+
+            try
+            {
+                if (pdfStream != null)
+                {
+                    pdfStream.Flush();
+                }
+
+            }
+            finally
+            {
+                if (disposing)
+                {
+                    // Free managed ressources
+                    pdfStream = null;
+                    encoder = null;
+                }
+            }
+
+            disposed = true;
+        }
+
+        #endregion
     }
 }
