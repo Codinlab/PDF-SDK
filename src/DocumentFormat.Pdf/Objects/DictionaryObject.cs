@@ -4,8 +4,6 @@ using DocumentFormat.Pdf.IO;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace DocumentFormat.Pdf.Objects
 {
@@ -114,9 +112,24 @@ namespace DocumentFormat.Pdf.Objects
             if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
 
-            // TODO : Implement Write method
+            writer.Write(StartToken);
 
-            throw new NotImplementedException();
+            HasDelimitersAttribute hasDelimiter;
+
+            foreach(var entry in internalDictionary)
+            {
+                NameObject.WriteName(writer, entry.Key);
+
+                if (!entry.Value.HasStartDelimiter())
+                {
+                    // Append separator
+                    writer.Write(Chars.SP);
+                }
+
+                entry.Value.Write(writer);
+            }
+
+            writer.Write(EndToken);
         }
 
         /// <summary>
@@ -159,11 +172,11 @@ namespace DocumentFormat.Pdf.Objects
 
             do
             {
-                var key = NameObject.FromReader(reader);
+                var key = NameObject.ReadName(reader);
                 reader.MoveToNonWhiteSpace();
                 var value = reader.ReadObject();
 
-                elementsDictionary.Add(key.Value, value);
+                elementsDictionary.Add(key, value);
 
                 reader.MoveToNonWhiteSpace();
                 if (reader.Peek() == EndToken[0])

@@ -1,9 +1,8 @@
 ﻿using DocumentFormat.Pdf.IO;
 using DocumentFormat.Pdf.Objects;
-using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace DocumentFormat.Pdf.Tests.Objects
@@ -13,6 +12,14 @@ namespace DocumentFormat.Pdf.Tests.Objects
         private static Stream BuildTestStream(string content)
         {
             return new MemoryStream(Encoding.GetEncoding("ASCII").GetBytes(content));
+        }
+
+        private static string ReadAsString(Stream stream)
+        {
+            var buffer = new byte[stream.Length];
+            stream.Seek(0, SeekOrigin.Begin);
+            stream.Read(buffer, 0, buffer.Length);
+            return Encoding.GetEncoding("ASCII").GetString(buffer);
         }
 
         public static TheoryData<string, string[], long> DictionaryTestData {
@@ -91,6 +98,32 @@ namespace DocumentFormat.Pdf.Tests.Objects
             Assert.NotNull(streamObj);
             Assert.IsType<StreamObject>(streamObj);
             Assert.Equal(expectedLength, ((StreamObject)streamObj).Length);
+        }
+
+        [Fact]
+        public void WritesDictionaryObject()
+        {
+            // Arrange
+            var dictionaryObj = new DictionaryObject(new Dictionary<string, PdfObject> {
+                { "Null", new NullObject() },
+                { "Boolean", new BooleanObject(true) },
+                { "Name", new NameObject("Name") },
+                { "String", new LiteralStringObject("String") }
+            });
+            string result;
+
+            // Act
+            using (var pdfStream = new MemoryStream())
+            {
+                var writer = new PdfWriter(pdfStream);
+                dictionaryObj.Write(writer);
+                writer.Flush();
+                result = ReadAsString(pdfStream);
+            }
+
+            // Assert
+            Assert.Equal("<</Null null/Boolean true/Name/Name/String(String)>>", result);
+
         }
     }
 }
