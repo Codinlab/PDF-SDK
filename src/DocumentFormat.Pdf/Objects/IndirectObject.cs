@@ -4,7 +4,6 @@ using DocumentFormat.Pdf.Structure;
 using System;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace DocumentFormat.Pdf.Objects
 {
@@ -58,49 +57,40 @@ namespace DocumentFormat.Pdf.Objects
             if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
 
-            // TODO : Implement Write method
+            writer.WriteLine($"{objectId.ObjectNumber.ToString()} {objectId.GenerationNumber.ToString()} {StartKeyword}");
 
-            throw new NotImplementedException();
+            referencedObject.Write(writer);
+
+            writer.WriteLine();
+            writer.WriteLine(EndKeyword);
         }
 
         /// <summary>
         /// Creates a IndirectObject from PdfReader.
         /// </summary>
         /// <param name="reader">The <see cref="PdfReader"/> to use</param>
-        /// <param name="objectId">Parsed <see cref="PdfObjectId"/></param>
         /// <returns>Created IndirectObject</returns>
-        public static IndirectObject FromReader(PdfReader reader, PdfObjectId objectId)
+        public static IndirectObject FromReader(PdfReader reader)
         {
             var header = reader.ReadLine();
 
             if (!header.EndsWith(StartKeyword))
                 throw new FormatException("An indirect object header was expected.");
 
-            var readId = PdfObjectId.FromString(header.Substring(0, header.Length - (StartKeyword.Length + 1)));
-            if (readId != objectId)
-                throw new InvalidOperationException("Read ObjectId does not matches reference");
+            var objectId = PdfObjectId.FromString(header.Substring(0, header.Length - (StartKeyword.Length + 1)));
 
             var referencedObject = reader.ReadObject();
 
+            reader.MoveToNonWhiteSpace();
             reader.ReadToken(EndKeyword);
 
             var objectType = referencedObject.GetType();
 
-            var genCtor = typeof(IndirectObject<>)
-                .MakeGenericType(objectType)
-                .GetTypeInfo()
-                .DeclaredConstructors
-                .First(ctor =>
-                {
-                    if(ctor.IsPublic)
-                    {
-                        var ctorParams = ctor.GetParameters();
-                        return ctorParams.Length == 2 && ctorParams[0].ParameterType == typeof(PdfObjectId) && ctorParams[0].ParameterType == objectType;
-                    }
-                    return false;
-                });
-
-            return (IndirectObject)genCtor.Invoke(new object[] { objectId, referencedObject });
+            return (IndirectObject)Activator.CreateInstance(
+                typeof(IndirectObject<>).MakeGenericType(objectType),
+                objectId,
+                referencedObject
+            );
         }
     }
 

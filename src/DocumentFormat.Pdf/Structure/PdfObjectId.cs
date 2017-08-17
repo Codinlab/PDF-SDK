@@ -1,11 +1,10 @@
 ﻿using DocumentFormat.Pdf.IO;
 using System;
-using System.Text.RegularExpressions;
 
 namespace DocumentFormat.Pdf.Structure
 {
     /// <summary>
-    /// Represents a PdfObjectId
+    /// Represents a PdfObjectId.
     /// </summary>
     public struct PdfObjectId
     {
@@ -13,24 +12,38 @@ namespace DocumentFormat.Pdf.Structure
         private ushort generationNumber;
 
         /// <summary>
-        /// Instanciates a PdfObjectId based on its object number
+        /// Gets object number.
         /// </summary>
-        /// <param name="objectNumber">The object number</param>
+        public int ObjectNumber => objectNumber;
+
+        /// <summary>
+        /// Gets generation number.
+        /// </summary>
+        public int GenerationNumber => generationNumber;
+
+        /// <summary>
+        /// Instanciates a PdfObjectId based on its object number.
+        /// </summary>
+        /// <param name="objectNumber">The object number.</param>
         public PdfObjectId(int objectNumber) : this(objectNumber, 0)
         {
         }
 
         /// <summary>
-        /// Instanciates a PdfObjectId based on its object number and generation number
+        /// Instanciates a PdfObjectId based on its object number and generation number.
         /// </summary>
-        /// <param name="objectNumber">The object number</param>
-        /// <param name="generationNumber">The object generation number</param>
+        /// <param name="objectNumber">The object number.</param>
+        /// <param name="generationNumber">The object generation number.</param>
         public PdfObjectId(int objectNumber, ushort generationNumber)
         {
             this.objectNumber = objectNumber;
             this.generationNumber = generationNumber;
         }
 
+        /// <summary>
+        /// Returns object's HashCode.
+        /// </summary>
+        /// <returns>Object's HashCode.</returns>
         public override int GetHashCode()
         {
             return objectNumber.GetHashCode() ^ generationNumber.GetHashCode();
