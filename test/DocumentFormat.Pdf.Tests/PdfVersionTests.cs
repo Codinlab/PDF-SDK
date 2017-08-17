@@ -26,7 +26,7 @@ namespace DocumentFormat.Pdf.Tests
         {
             // Arrange
             var version = new PdfVersion(1, 2);
-            string writed;
+            string result;
 
             // Act
             using (var pdfStream = new MemoryStream())
@@ -34,11 +34,11 @@ namespace DocumentFormat.Pdf.Tests
                 var writer = new PdfWriter(pdfStream);
                 version.Write(writer);
                 writer.Flush();
-                writed = ReadAsString(pdfStream);
+                result = ReadAsString(pdfStream);
             }
 
             // Assert
-            Assert.Equal("1.2", writed);
+            Assert.Equal("1.2", result);
         }
 
         [Fact]
@@ -46,7 +46,7 @@ namespace DocumentFormat.Pdf.Tests
         {
             // Arrange
             var version = new PdfVersion(1, 2);
-            string writed;
+            string result;
 
             // Act
             using (var pdfStream = new MemoryStream())
@@ -54,11 +54,11 @@ namespace DocumentFormat.Pdf.Tests
                 var writer = new PdfWriter(pdfStream);
                 version.WriteHeader(writer);
                 writer.Flush();
-                writed = ReadAsString(pdfStream);
+                result = ReadAsString(pdfStream);
             }
 
             // Assert
-            Assert.Equal("%PDF-1.2\r\n", writed);
+            Assert.Equal("%PDF-1.2\r\n", result);
         }
 
         [Theory]
