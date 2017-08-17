@@ -14,6 +14,14 @@ namespace DocumentFormat.Pdf.Tests.Objects
             return new MemoryStream(Encoding.GetEncoding("ASCII").GetBytes(content));
         }
 
+        private static string ReadAsString(Stream stream)
+        {
+            var buffer = new byte[stream.Length];
+            stream.Seek(0, SeekOrigin.Begin);
+            stream.Read(buffer, 0, buffer.Length);
+            return Encoding.GetEncoding("ASCII").GetString(buffer);
+        }
+
         public static TheoryData<string, string, long> NameTestData {
             get => new TheoryData<string, string, long> {
                 { "/ empty name", "", 1 },
@@ -43,6 +51,26 @@ namespace DocumentFormat.Pdf.Tests.Objects
             Assert.NotNull(nameObj);
             Assert.Equal(expectedValue, nameObj.Value);
             Assert.Equal(expectedPosition, position);
+        }
+
+        [Fact]
+        public void WritesNameObject()
+        {
+            // Arrange
+            var nameObj = new NameObject("C# Rocks !");
+            string result;
+
+            // Act
+            using (var pdfStream = new MemoryStream())
+            {
+                var writer = new PdfWriter(pdfStream);
+                nameObj.Write(writer);
+                writer.Flush();
+                result = ReadAsString(pdfStream);
+            }
+
+            // Assert
+            Assert.Equal("/C#23#20Rocks#20!", result);
         }
     }
 }

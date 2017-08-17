@@ -42,9 +42,23 @@ namespace DocumentFormat.Pdf.Objects
             if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
 
-            // TODO : Implement Write method
+            var sb = new StringBuilder();
+            sb.Append(StartToken);
 
-            throw new NotImplementedException();
+            for(int i = 0; i < value.Length; i++)
+            {
+                if(value[i] < 33 || value[i] > 126 || value[i] == '#' || Chars.IsDelimiter(value[i]))
+                {
+                    // UTF-8 code
+                    sb.AppendFormat("#{0:x2}", (byte)value[i]);
+                }
+                else
+                {
+                    sb.Append(value[i]);
+                }
+            }
+
+            writer.Write(sb.ToString());
         }
 
         /// <summary>
@@ -75,6 +89,7 @@ namespace DocumentFormat.Pdf.Objects
                 {
                     if(i < readChars.Length - 2)
                     {
+                        // UTF-8 character
                         var hex = new char[] { readChars[i + 1], readChars[i + 2] };
                         sb.Append((char)byte.Parse(new string(hex), NumberStyles.HexNumber));
                         i += 2;
