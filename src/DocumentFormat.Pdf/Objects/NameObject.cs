@@ -2,9 +2,7 @@
 using DocumentFormat.Pdf.IO;
 using System;
 using System.Globalization;
-using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace DocumentFormat.Pdf.Objects
 {
@@ -44,23 +42,7 @@ namespace DocumentFormat.Pdf.Objects
             if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
 
-            var sb = new StringBuilder();
-            sb.Append(StartToken);
-
-            for(int i = 0; i < value.Length; i++)
-            {
-                if(value[i] < 33 || value[i] > 126 || value[i] == '#' || Chars.IsDelimiter(value[i]))
-                {
-                    // UTF-8 code
-                    sb.AppendFormat("#{0:x2}", (byte)value[i]);
-                }
-                else
-                {
-                    sb.Append(value[i]);
-                }
-            }
-
-            writer.Write(sb.ToString());
+            WriteName(writer, value);
         }
 
         /// <summary>
@@ -74,22 +56,35 @@ namespace DocumentFormat.Pdf.Objects
             if (reader == null)
                 throw new ArgumentNullException(nameof(reader));
 
+            string name = ReadName(reader);
+
+            return new NameObject(name);
+        }
+
+        /// <summary>
+        /// Reads name from PdfReader.
+        /// Read stream must start with '/' delimiter.
+        /// </summary>
+        /// <param name="reader">The <see cref="PdfReader"/> to use.</param>
+        /// <returns>Read name.</returns>
+        internal static string ReadName(PdfReader reader)
+        {
             if (reader.Read() != StartToken)
                 throw new FormatException("A name object was expected.");
 
             var readChars = reader.ReadWhile(c => !Chars.IsDelimiterOrWhiteSpace(c));
 
-            if(readChars.Length == 0)
+            if (readChars.Length == 0)
             {
-                return new NameObject("");
+                return "";
             }
 
             var sb = new StringBuilder();
             for (var i = 0; i < readChars.Length; i++)
             {
-                if(readChars[i] == '#')
+                if (readChars[i] == '#')
                 {
-                    if(i < readChars.Length - 2)
+                    if (i < readChars.Length - 2)
                     {
                         // UTF-8 character
                         var hex = new char[] { readChars[i + 1], readChars[i + 2] };
@@ -103,7 +98,33 @@ namespace DocumentFormat.Pdf.Objects
                 }
             }
 
-            return new NameObject(sb.ToString());
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Writes name to the current stream.
+        /// </summary>
+        /// <param name="writer">The <see cref="PdfWriter"/> to use.</param>
+        /// <param name="value">The name value to write.</param>
+        internal static void WriteName(PdfWriter writer, string value)
+        {
+            var sb = new StringBuilder();
+            sb.Append(StartToken);
+
+            for (int i = 0; i < value.Length; i++)
+            {
+                if (value[i] < 33 || value[i] > 126 || value[i] == '#' || Chars.IsDelimiter(value[i]))
+                {
+                    // UTF-8 code
+                    sb.AppendFormat("#{0:x2}", (byte)value[i]);
+                }
+                else
+                {
+                    sb.Append(value[i]);
+                }
+            }
+
+            writer.Write(sb.ToString());
         }
     }
 }
