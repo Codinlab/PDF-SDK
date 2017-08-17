@@ -1,5 +1,5 @@
-﻿using DocumentFormat.Pdf.Extensions;
 ﻿using DocumentFormat.Pdf.Attributes;
+using DocumentFormat.Pdf.Extensions;
 using DocumentFormat.Pdf.IO;
 using System;
 using System.Collections;
@@ -69,9 +69,26 @@ namespace DocumentFormat.Pdf.Objects
             if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
 
-            // TODO : Implement Write method
+            writer.Write(StartToken);
 
-            throw new NotImplementedException();
+            HasDelimitersAttribute hasDelimiter;
+            bool endsWithDelimiter = true;
+
+            foreach(var obj in internalList)
+            {
+                hasDelimiter = obj.GetHasDelimiterAttibute();
+
+                if (!endsWithDelimiter && !(hasDelimiter?.AtStart ?? false))
+                {
+                    // Append separator
+                    writer.Write(Chars.SP);
+                }
+                obj.Write(writer);
+
+                endsWithDelimiter = hasDelimiter?.AtEnd ?? false;
+            }
+
+            writer.Write(EndToken);
         }
 
         /// <summary>

@@ -70,6 +70,31 @@ namespace DocumentFormat.Pdf.IO
         }
 
         /// <summary>
+        /// Writes an single characters to the current stream and advances the current position within the PDF stream by one.
+        /// </summary>
+        /// <param name="value">The character to write.</param>
+        public void Write(char value)
+        {
+            Write(new char[] { value });
+        }
+
+        /// <summary>
+        /// Writes an array of characters to the current stream and advances the current position within the PDF stream
+        /// by the number of characters written.
+        /// </summary>
+        /// <param name="buffer">The array of characters to write.</param>
+        public void Write(char[] buffer)
+        {
+            if (buffer == null)
+                throw new NullReferenceException(nameof(buffer));
+
+            var byteBuffer = new byte[buffer.Length];
+            encoder.GetBytes(buffer, 0, buffer.Length, byteBuffer, 0, true);
+
+            pdfStream.Write(byteBuffer, 0, byteBuffer.Length);
+        }
+
+        /// <summary>
         /// Writes a string to the current stream and advances the current position within the PDF stream
         /// by the number of characters written.
         /// </summary>
@@ -79,10 +104,7 @@ namespace DocumentFormat.Pdf.IO
             if (value == null)
                 return;
 
-            var buffer = new byte[value.Length];
-            encoder.GetBytes(value.ToCharArray(), 0, value.Length, buffer, 0, true);
-
-            pdfStream.Write(buffer, 0, buffer.Length);
+            Write(value.ToCharArray());
         }
 
 
