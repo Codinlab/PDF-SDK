@@ -26,9 +26,7 @@ namespace DocumentFormat.Pdf.Objects
             if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
 
-            // TODO : Implement Write method
-
-            throw new NotImplementedException();
+            writer.Write($"{objectId.ObjectNumber.ToString()} {objectId.GenerationNumber.ToString()} R");
         }
     }
 }
