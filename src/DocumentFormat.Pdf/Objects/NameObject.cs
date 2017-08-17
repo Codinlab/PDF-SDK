@@ -1,4 +1,5 @@
-﻿using DocumentFormat.Pdf.IO;
+﻿using DocumentFormat.Pdf.Attributes;
+using DocumentFormat.Pdf.IO;
 using System;
 using System.Globalization;
 using System.IO;
@@ -8,8 +9,9 @@ using System.Threading.Tasks;
 namespace DocumentFormat.Pdf.Objects
 {
     /// <summary>
-    /// Represents a Pdf Name Object
+    /// Represents a Pdf Name Object.
     /// </summary>
+    [HasDelimiters(AtEnd = false)]
     public class NameObject : PdfObject
     {
         /// <summary>
@@ -20,16 +22,16 @@ namespace DocumentFormat.Pdf.Objects
         private string value;
 
         /// <summary>
-        /// Instanciates a new NameObject
+        /// Instanciates a new NameObject.
         /// </summary>
-        /// <param name="value">The object's value</param>
+        /// <param name="value">The object's value.</param>
         public NameObject(string value)
         {
             this.value = value;
         }
 
         /// <summary>
-        /// Gets the object's value
+        /// Gets the object's value.
         /// </summary>
         public string Value => value;
 
@@ -65,8 +67,8 @@ namespace DocumentFormat.Pdf.Objects
         /// Creates a Name object from PdfReader.
         /// Read stream must start with '/' delimiter.
         /// </summary>
-        /// <param name="reader">The <see cref="PdfReader"/> to use</param>
-        /// <returns>Created NameObject</returns>
+        /// <param name="reader">The <see cref="PdfReader"/> to use.</param>
+        /// <returns>Created NameObject.</returns>
         public static NameObject FromReader(PdfReader reader)
         {
             if (reader == null)

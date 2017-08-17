@@ -1,4 +1,5 @@
-﻿using DocumentFormat.Pdf.IO;
+﻿using DocumentFormat.Pdf.Attributes;
+using DocumentFormat.Pdf.IO;
 using System;
 
 namespace DocumentFormat.Pdf.Objects
@@ -6,6 +7,7 @@ namespace DocumentFormat.Pdf.Objects
     /// <summary>
     /// Base class for Pdf String Object
     /// </summary>
+    [HasDelimiters]
     public abstract class StringObject : PdfObject
     {
         /// <summary>

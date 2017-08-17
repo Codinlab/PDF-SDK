@@ -1,4 +1,5 @@
-﻿using DocumentFormat.Pdf.Extensions;
+﻿using DocumentFormat.Pdf.Attributes;
+using DocumentFormat.Pdf.Extensions;
 using DocumentFormat.Pdf.IO;
 using System;
 using System.Collections;
@@ -9,8 +10,9 @@ using System.Threading.Tasks;
 namespace DocumentFormat.Pdf.Objects
 {
     /// <summary>
-    /// Represents a Pdf Dictionary Object
+    /// Represents a Pdf Dictionary Object.
     /// </summary>
+    [HasDelimiters]
     public class DictionaryObject : PdfObject, IReadOnlyDictionary<string, PdfObject>
     {
         /// <summary>
@@ -34,7 +36,7 @@ namespace DocumentFormat.Pdf.Objects
         protected readonly Dictionary<string, PdfObject> internalDictionary;
 
         /// <summary>
-        /// Instanciates a new StringObject
+        /// Instanciates a new StringObject.
         /// </summary>
         /// <param name="items">Dictionary items</param>
         public DictionaryObject(IDictionary<string, PdfObject> items)
@@ -43,31 +45,31 @@ namespace DocumentFormat.Pdf.Objects
         }
 
         /// <summary>
-        /// Gets <see cref="PdfObject"/> with specified key
+        /// Gets <see cref="PdfObject"/> with specified key.
         /// </summary>
-        /// <param name="key">Object key</param>
-        /// <returns></returns>
+        /// <param name="key">Object key.</param>
+        /// <returns>Object at specified key.</returns>
         public PdfObject this[string key] => throw new NotImplementedException();
 
         /// <summary>
-        /// Gets the number of objects in the array
+        /// Gets the number of objects in the array.
         /// </summary>
         public int Count => internalDictionary.Count;
 
         /// <summary>
-        /// Gets keys enumerator
+        /// Gets keys enumerator.
         /// </summary>
         public IEnumerable<string> Keys => internalDictionary.Keys;
 
         /// <summary>
-        /// Gets values enumerator
+        /// Gets values enumerator.
         /// </summary>
         public IEnumerable<PdfObject> Values => internalDictionary.Values;
 
         /// <summary>
         /// Determines whether the DictionaryObject contains the specified key.
         /// </summary>
-        /// <param name="key">The key to locate</param>
+        /// <param name="key">The key to locate.</param>
         /// <returns>True if the DictionaryObject contains the specified key, otherwise false.</returns>
         public bool ContainsKey(string key)
         {
@@ -75,9 +77,9 @@ namespace DocumentFormat.Pdf.Objects
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates through the DictionaryObject's elements
+        /// Returns an enumerator that iterates through the DictionaryObject's elements.
         /// </summary>
-        /// <returns>The enumerator</returns>
+        /// <returns>The enumerator.</returns>
         public IEnumerator<KeyValuePair<string, PdfObject>> GetEnumerator()
         {
             return internalDictionary.GetEnumerator();
@@ -95,9 +97,9 @@ namespace DocumentFormat.Pdf.Objects
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates through the DictionaryObject's elements
+        /// Returns an enumerator that iterates through the DictionaryObject's elements.
         /// </summary>
-        /// <returns>The enumerator</returns>
+        /// <returns>The enumerator.</returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
             throw new NotImplementedException();
@@ -143,8 +145,8 @@ namespace DocumentFormat.Pdf.Objects
         /// <summary>
         /// Creates an DictionaryObject from DocumentReader.
         /// </summary>
-        /// <param name="reader">The <see cref="PdfReader"/> to use</param>
-        /// <returns>Parsed dictionary</returns>
+        /// <param name="reader">The <see cref="PdfReader"/> to use.</param>
+        /// <returns>Parsed dictionary.</returns>
         protected static Dictionary<string, PdfObject> ParseDictionary(PdfReader reader)
         {
             if (reader == null)

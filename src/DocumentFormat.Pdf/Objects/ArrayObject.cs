@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.Pdf.Extensions;
+﻿using DocumentFormat.Pdf.Attributes;
 using DocumentFormat.Pdf.IO;
 using System;
 using System.Collections;
@@ -9,6 +10,7 @@ namespace DocumentFormat.Pdf.Objects
     /// <summary>
     /// Represents a Pdf Array Object.
     /// </summary>
+    [HasDelimiters]
     public class ArrayObject : PdfObject, IEnumerable<PdfObject>
     {
         /// <summary>

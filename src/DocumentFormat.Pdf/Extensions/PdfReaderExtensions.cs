@@ -2,13 +2,11 @@
 using DocumentFormat.Pdf.Objects;
 using DocumentFormat.Pdf.Structure;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace DocumentFormat.Pdf.Extensions
 {
     /// <summary>
-    /// <see cref="PdfReader"/> extension methods
+    /// <see cref="PdfReader"/> extension methods.
     /// </summary>
     public static class PdfReaderExtensions
     {
