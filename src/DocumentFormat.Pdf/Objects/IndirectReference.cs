@@ -5,7 +5,7 @@ using System;
 namespace DocumentFormat.Pdf.Objects
 {
     /// <summary>
-    /// Represents an IndirectReference
+    /// Represents an unresolved IndirectReference
     /// </summary>
     public class IndirectReference : IndirectObject
     {
@@ -18,15 +18,12 @@ namespace DocumentFormat.Pdf.Objects
         }
 
         /// <summary>
-        /// Writes object to the current stream.
+        /// Throws NotSupportedException.
         /// </summary>
         /// <param name="writer">The <see cref="PdfWriter"/> to use.</param>
         public override void Write(PdfWriter writer)
         {
-            if (writer == null)
-                throw new ArgumentNullException(nameof(writer));
-
-            writer.Write($"{objectId.ObjectNumber.ToString()} {objectId.GenerationNumber.ToString()} R");
+            throw new NotSupportedException("Connot write an unresolved object.");
         }
     }
 }

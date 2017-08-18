@@ -41,6 +41,15 @@ namespace DocumentFormat.Pdf.Structure
         }
 
         /// <summary>
+        /// Writes object reference to the current stream.
+        /// </summary>
+        /// <param name="writer">The <see cref="PdfWriter"/> to use.</param>
+        internal void WriteReference(PdfWriter writer)
+        {
+            writer.Write($"{objectNumber.ToString()} {generationNumber.ToString()} R");
+        }
+
+        /// <summary>
         /// Returns object's HashCode.
         /// </summary>
         /// <returns>Object's HashCode.</returns>

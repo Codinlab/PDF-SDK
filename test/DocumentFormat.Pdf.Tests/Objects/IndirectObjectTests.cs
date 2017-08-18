@@ -49,6 +49,28 @@ namespace DocumentFormat.Pdf.Tests.Objects
         }
 
         [Fact]
+        public void WritesIndirectReference()
+        {
+            // Arrange
+            var indRef = new IndirectReference(new PdfObjectId(12, 3));
+            string result;
+
+            // Act
+            using (var pdfStream = new MemoryStream())
+            {
+                using (var writer = new PdfWriter(pdfStream))
+                {
+                    indRef.WriteReference(writer);
+                    writer.Flush();
+                    result = ReadAsString(pdfStream);
+                }
+            }
+
+            // Assert
+            Assert.Equal("12 3 R", result);
+        }
+
+        [Fact]
         public void WritesIndirectObject()
         {
             // Arrange

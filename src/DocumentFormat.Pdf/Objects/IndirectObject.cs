@@ -2,8 +2,6 @@
 using DocumentFormat.Pdf.IO;
 using DocumentFormat.Pdf.Structure;
 using System;
-using System.Linq;
-using System.Reflection;
 
 namespace DocumentFormat.Pdf.Objects
 {
@@ -63,6 +61,18 @@ namespace DocumentFormat.Pdf.Objects
 
             writer.WriteLine();
             writer.WriteLine(EndKeyword);
+        }
+
+        /// <summary>
+        /// Writes indirect object reference to the current stream.
+        /// </summary>
+        /// <param name="writer">The <see cref="PdfWriter"/> to use.</param>
+        public void WriteReference(PdfWriter writer)
+        {
+            if (writer == null)
+                throw new ArgumentNullException(nameof(writer));
+
+            objectId.WriteReference(writer);
         }
 
         /// <summary>
