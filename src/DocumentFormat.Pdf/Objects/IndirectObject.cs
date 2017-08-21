@@ -3,6 +3,9 @@ using DocumentFormat.Pdf.Extensions;
 using DocumentFormat.Pdf.IO;
 using DocumentFormat.Pdf.Structure;
 using System;
+using System.Collections.Concurrent;
+using System.Linq;
+using System.Reflection;
 
 namespace DocumentFormat.Pdf.Objects
 {
@@ -11,6 +14,8 @@ namespace DocumentFormat.Pdf.Objects
     /// </summary>
     public abstract class IndirectObject : PdfObject
     {
+        private static Factory Activator = new Factory();
+
         /// <summary>
         /// The obj keyword
         /// </summary>
@@ -117,11 +122,41 @@ namespace DocumentFormat.Pdf.Objects
 
             var objectType = referencedObject.GetType();
 
-            return (IndirectObject)Activator.CreateInstance(
-                typeof(IndirectObject<>).MakeGenericType(objectType),
+            return Activator.CreateInstance(
                 objectId,
-                referencedObject
+                referencedObject,
+                true
             );
+        }
+
+        private class Factory
+        {
+            private ConcurrentDictionary<Type, ConstructorInfo> ctorCache = new ConcurrentDictionary<Type, ConstructorInfo>();
+
+            public IndirectObject CreateInstance(PdfObjectId objectId, PdfObject referencedObject, bool isReadOnly)
+            {
+                var objectType = referencedObject.GetType();
+
+                var genCtor = ctorCache.GetOrAdd(objectType, GetConstructorForType);
+
+                return (IndirectObject)genCtor.Invoke(new object[] { objectId, referencedObject, isReadOnly });
+            }
+
+            private ConstructorInfo GetConstructorForType(Type targetType)
+            {
+                return typeof(IndirectObject<>)
+                    .MakeGenericType(targetType)
+                    .GetTypeInfo()
+                    .DeclaredConstructors
+                    .First(ctor =>
+                    {
+                        var ctorParams = ctor.GetParameters();
+                        return ctorParams.Length == 3 &&
+                            ctorParams[0].ParameterType == typeof(PdfObjectId) &&
+                            ctorParams[1].ParameterType == targetType &&
+                            ctorParams[2].ParameterType == typeof(bool);
+                    });
+            }
         }
     }
 
@@ -138,6 +173,16 @@ namespace DocumentFormat.Pdf.Objects
         /// <param name="objectId">The <see cref="PdfObjectId"/> of the referenced object</param>
         /// <param name="referencedObject">Referenced <see cref="PdfObject"/></param>
         public IndirectObject(PdfObjectId objectId, T referencedObject) : base(objectId, referencedObject)
+        {
+        }
+
+        /// <summary>
+        /// Instanciates a new IndirectObject
+        /// </summary>
+        /// <param name="objectId">The <see cref="PdfObjectId"/> of the referenced object</param>
+        /// <param name="referencedObject">Referenced <see cref="PdfObject"/></param>
+        /// <param name="isReadOnly">True if object is read-only, otherwise false.</param>
+        internal IndirectObject(PdfObjectId objectId, T referencedObject, bool isReadOnly) : base(objectId, referencedObject, isReadOnly)
         {
         }
 
