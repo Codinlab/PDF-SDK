@@ -1,4 +1,5 @@
-﻿using DocumentFormat.Pdf.Extensions;
+﻿using DocumentFormat.Pdf.Exceptions;
+using DocumentFormat.Pdf.Extensions;
 using DocumentFormat.Pdf.IO;
 using System;
 using System.Collections.Generic;
@@ -42,7 +43,7 @@ namespace DocumentFormat.Pdf.Objects
         private byte[] encodedData;
 
         /// <summary>
-        /// Instanciates a new StringObject.
+        /// Instanciates a new StreamObject.
         /// </summary>
         /// <param name="dictionaryItems">Dictionary items.</param>
         /// <param name="data">Stream data.</param>
@@ -52,18 +53,35 @@ namespace DocumentFormat.Pdf.Objects
         }
 
         /// <summary>
-        /// Instanciates a new StringObject.
+        /// Instanciates a new StreamObject.
         /// </summary>
         /// <param name="dictionaryItems">Dictionary items.</param>
-        protected StreamObject(IDictionary<string, PdfObject> dictionaryItems) : base(dictionaryItems)
+        /// <param name="data">Stream encoded data.</param>
+        /// <param name="isReadOnly">True if object is read-only, otherwise false.</param>
+        protected StreamObject(IDictionary<string, PdfObject> dictionaryItems, byte[] data, bool isReadOnly) : base(dictionaryItems, isReadOnly)
         {
-
+            encodedData = data;
         }
 
         /// <summary>
-        /// Gets the stream length.
+        /// Gets or sets the stream length.
         /// </summary>
-        public int Length => (internalDictionary[LengthKey] as IntegerObject).IntergerValue;
+        public int Length {
+            get => internalDictionary.ContainsKey(LengthKey) ? (internalDictionary[LengthKey] as IntegerObject).IntergerValue : 0;
+            protected set {
+                if (IsReadOnly)
+                    throw new ObjectReadOnlyException();
+
+                if (internalDictionary.ContainsKey(LengthKey) && !internalDictionary[LengthKey].IsReadOnly)
+                {
+                    (internalDictionary[LengthKey] as IntegerObject).IntergerValue = value;
+                }
+                else
+                {
+                    internalDictionary[LengthKey] = new IntegerObject(value);
+                }
+            }
+        }
 
         /// <summary>
         /// Gets unfiltered read-only data stream
@@ -88,7 +106,16 @@ namespace DocumentFormat.Pdf.Objects
         /// <summary>
         /// Gets the name of the filter applied to data.
         /// </summary>
-        public PdfObject Filter => internalDictionary.ContainsKey(FilterKey) ? internalDictionary[FilterKey] : null;
+        public PdfObject Filter {
+            get => internalDictionary.ContainsKey(FilterKey) ? internalDictionary[FilterKey] : null;
+            protected set {
+                if (IsReadOnly)
+                    throw new ObjectReadOnlyException();
+
+                internalDictionary[LengthKey] = value;
+            }
+        }
+        
 
         /// <summary>
         /// 
@@ -106,7 +133,7 @@ namespace DocumentFormat.Pdf.Objects
             }
 
             // Set length
-            internalDictionary[LengthKey] = new IntegerObject(encodedData.Length);
+            Length = encodedData.Length;
         }
 
         /// <summary>
@@ -187,12 +214,7 @@ namespace DocumentFormat.Pdf.Objects
             if(read != length)
                 throw new FormatException("Bad stream length.");
 
-            var streamObj = new StreamObject(streamDictionary)
-            {
-                encodedData = data
-            };
-
-            return streamObj;
+            return new StreamObject(streamDictionary, data, true);
         }
     }
 }

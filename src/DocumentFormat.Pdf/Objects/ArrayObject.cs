@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.Pdf.Attributes;
+using DocumentFormat.Pdf.Exceptions;
 using DocumentFormat.Pdf.Extensions;
 using DocumentFormat.Pdf.IO;
 using System;
@@ -11,7 +12,7 @@ namespace DocumentFormat.Pdf.Objects
     /// Represents a Pdf Array Object.
     /// </summary>
     [HasDelimiters]
-    public class ArrayObject : PdfObject, IEnumerable<PdfObject>
+    public class ArrayObject : PdfObject, IList<PdfObject>
     {
         /// <summary>
         /// ArrayObject's start token.
@@ -31,8 +32,26 @@ namespace DocumentFormat.Pdf.Objects
         /// <summary>
         /// Instanciates a new StringObject.
         /// </summary>
+        public ArrayObject()
+        {
+            internalList = new List<PdfObject>();
+        }
+
+        /// <summary>
+        /// Instanciates a new StringObject.
+        /// </summary>
         /// <param name="items">Array items.</param>
         public ArrayObject(IEnumerable<PdfObject> items)
+        {
+            internalList = new List<PdfObject>(items);
+        }
+
+        /// <summary>
+        /// Instanciates a new StringObject.
+        /// </summary>
+        /// <param name="items">Array items.</param>
+        /// <param name="isReadOnly">True if object is read-only, otherwise false.</param>
+        internal ArrayObject(IEnumerable<PdfObject> items, bool isReadOnly) : base(isReadOnly)
         {
             internalList = new List<PdfObject>(items);
         }
@@ -41,6 +60,23 @@ namespace DocumentFormat.Pdf.Objects
         /// Gets the number of objects in the array.
         /// </summary>
         public int Count => internalList.Count;
+
+        /// <summary>
+        /// Get or sets item at specified index.
+        /// </summary>
+        /// <param name="index">Item index.</param>
+        /// <returns>Item at specified index.</returns>
+        public PdfObject this[int index] {
+            get {
+                return internalList[index];
+            }
+            set {
+                if (IsReadOnly)
+                    throw new ObjectReadOnlyException();
+
+                internalList[index] = value;
+            }
+        }
 
         /// <summary>
         /// Gets items enumerator.
@@ -60,6 +96,61 @@ namespace DocumentFormat.Pdf.Objects
             return internalList.GetEnumerator();
         }
 
+        public int IndexOf(PdfObject item)
+        {
+            return internalList.IndexOf(item);
+        }
+
+        public void Insert(int index, PdfObject item)
+        {
+            if (IsReadOnly)
+                throw new ObjectReadOnlyException();
+
+            internalList.Insert(index, item);
+        }
+
+        public void RemoveAt(int index)
+        {
+            if (IsReadOnly)
+                throw new ObjectReadOnlyException();
+
+            internalList.RemoveAt(index);
+        }
+
+        public void Add(PdfObject item)
+        {
+            if (IsReadOnly)
+                throw new ObjectReadOnlyException();
+
+            internalList.Add(item);
+        }
+
+        public void Clear()
+        {
+            if (IsReadOnly)
+                throw new ObjectReadOnlyException();
+
+            internalList.Clear();
+        }
+
+        public bool Contains(PdfObject item)
+        {
+            return internalList.Contains(item);
+        }
+
+        public void CopyTo(PdfObject[] array, int arrayIndex)
+        {
+            internalList.CopyTo(array, arrayIndex);
+        }
+
+        public bool Remove(PdfObject item)
+        {
+            if (IsReadOnly)
+                throw new ObjectReadOnlyException();
+
+            return internalList.Remove(item);
+        }
+
         /// <summary>
         /// Writes object to the current stream.
         /// </summary>
@@ -74,7 +165,7 @@ namespace DocumentFormat.Pdf.Objects
             HasDelimitersAttribute hasDelimiter;
             bool endsWithDelimiter = true;
 
-            foreach(var obj in internalList)
+            foreach (var obj in internalList)
             {
                 hasDelimiter = obj.GetHasDelimiterAttibute();
 
@@ -108,7 +199,7 @@ namespace DocumentFormat.Pdf.Objects
 
             var elementsList = new List<PdfObject>();
 
-            while(reader.Peek() != EndToken)
+            while (reader.Peek() != EndToken)
             {
                 elementsList.Add(reader.ReadObject());
                 reader.MoveToNonWhiteSpace();
@@ -117,7 +208,7 @@ namespace DocumentFormat.Pdf.Objects
             // Skip end token
             reader.Position++;
 
-            return new ArrayObject(elementsList);
+            return new ArrayObject(elementsList, true);
         }
     }
 }

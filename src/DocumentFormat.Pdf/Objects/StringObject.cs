@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.Pdf.Attributes;
+using DocumentFormat.Pdf.Exceptions;
 using DocumentFormat.Pdf.IO;
 using System;
 
@@ -25,9 +26,27 @@ namespace DocumentFormat.Pdf.Objects
         }
 
         /// <summary>
-        /// Gets the object's value
+        /// Instanciates a new StringObject
         /// </summary>
-        public string Value => value;
+        /// <param name="value">The object's value</param>
+        /// <param name="isReadOnly">True if object is read-only, otherwise false.</param>
+        public StringObject(string value, bool isReadOnly) : base(isReadOnly)
+        {
+            this.value = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the object's value
+        /// </summary>
+        public string Value {
+            get => value;
+            set {
+                if (IsReadOnly)
+                    throw new ObjectReadOnlyException();
+
+                this.value = value;
+            }
+        }
 
         /// <summary>
         /// Creates a StringObject from PdfReader.

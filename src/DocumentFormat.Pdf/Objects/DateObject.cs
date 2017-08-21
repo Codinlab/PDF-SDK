@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DocumentFormat.Pdf.Exceptions;
+using System;
 
 namespace DocumentFormat.Pdf.Objects
 {
@@ -36,9 +37,18 @@ namespace DocumentFormat.Pdf.Objects
         }
 
         /// <summary>
-        /// Gets the object's value.
+        /// Gets or sets the object's value.
         /// </summary>
-        public DateTimeOffset Value => dateValue;
+        public new DateTimeOffset Value {
+            get => dateValue;
+            set {
+                if (IsReadOnly)
+                    throw new ObjectReadOnlyException();
+
+                this.value = Format(value);
+                dateValue = value;
+            }
+        }
 
         private static string Format(DateTimeOffset value)
         {

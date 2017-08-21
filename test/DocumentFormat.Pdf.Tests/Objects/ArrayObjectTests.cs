@@ -58,12 +58,12 @@ namespace DocumentFormat.Pdf.Tests.Objects
         public void WritesArrayObject()
         {
             // Arrange
-            var arrayObj = new ArrayObject(new PdfObject[] {
+            var arrayObj = new ArrayObject() {
                 new NullObject(),
                 new BooleanObject(true),
                 new NameObject("Name"),
                 new LiteralStringObject("String")
-            });
+            };
             string result;
 
             // Act

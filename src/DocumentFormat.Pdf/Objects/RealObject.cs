@@ -1,4 +1,5 @@
-﻿using DocumentFormat.Pdf.IO;
+﻿using DocumentFormat.Pdf.Exceptions;
+using DocumentFormat.Pdf.IO;
 using System;
 using System.Globalization;
 
@@ -21,14 +22,40 @@ namespace DocumentFormat.Pdf.Objects
         }
 
         /// <summary>
+        /// Instanciates a new RealObject
+        /// </summary>
+        /// <param name="value">The object's value</param>
+        /// <param name="isReadOnly">True if object is read-only, otherwise false.</param>
+        internal RealObject(float value, bool isReadOnly) : base(isReadOnly)
+        {
+            this.value = value;
+        }
+
+        /// <summary>
         /// Gets the object's value converted to integer
         /// </summary>
-        public override int IntergerValue => Convert.ToInt32(value);
+        public override int IntergerValue {
+            get => Convert.ToInt32(value);
+            set {
+                if (IsReadOnly)
+                    throw new ObjectReadOnlyException();
+
+                this.value = Convert.ToSingle(value);
+            }
+        }
 
         /// <summary>
         /// Gets the object's value
         /// </summary>
-        public override float RealValue => value;
+        public override float RealValue {
+            get => value;
+            set {
+                if (IsReadOnly)
+                    throw new ObjectReadOnlyException();
+
+                this.value = value;
+            }
+        }
 
         /// <summary>
         /// Writes object to the current stream.

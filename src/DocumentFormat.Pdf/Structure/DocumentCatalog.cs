@@ -28,6 +28,13 @@ namespace DocumentFormat.Pdf.Structure
         /// <summary>
         /// Instanciates a new Document Catalog.
         /// </summary>
+        public DocumentCatalog()
+        {
+        }
+
+        /// <summary>
+        /// Instanciates a new Document Catalog.
+        /// </summary>
         /// <param name="items">Catalog items.</param>
         public DocumentCatalog(IDictionary<string, PdfObject> items) : base(items)
         {

@@ -30,7 +30,9 @@ namespace DocumentFormat.Pdf.Structure
         /// Instanciates a new Cross-Reference stream object.
         /// </summary>
         /// <param name="dictionaryItems">Dictionary items.</param>
-        public XRefStream(IDictionary<string, PdfObject> dictionaryItems) : base(dictionaryItems)
+        /// <param name="data">Stream encoded data.</param>
+        /// <param name="isReadOnly">True if object is read-only, otherwise false.</param>
+        public XRefStream(IDictionary<string, PdfObject> dictionaryItems, byte[] data, bool isReadOnly) : base(dictionaryItems, data, isReadOnly)
         {
         }
 
@@ -68,17 +70,17 @@ namespace DocumentFormat.Pdf.Structure
         /// <summary>
         /// The catalog dictionary for the PDF document contained in the file
         /// </summary>
-        public IReadOnlyDictionary<string, PdfObject> Root => (internalDictionary[PdfTrailer.RootKey] as DictionaryObject);
+        public IDictionary<string, PdfObject> Root => (internalDictionary[PdfTrailer.RootKey] as DictionaryObject);
 
         /// <summary>
         /// The document’s encryption dictionary.
         /// </summary>
-        public IReadOnlyDictionary<string, PdfObject> Encrypt => internalDictionary.ContainsKey(PdfTrailer.EncryptKey) ? (internalDictionary[PdfTrailer.EncryptKey] as DictionaryObject) : null;
+        public IDictionary<string, PdfObject> Encrypt => internalDictionary.ContainsKey(PdfTrailer.EncryptKey) ? (internalDictionary[PdfTrailer.EncryptKey] as DictionaryObject) : null;
 
         /// <summary>
         /// The document’s information dictionary.
         /// </summary>
-        public IReadOnlyDictionary<string, PdfObject> Info => internalDictionary.ContainsKey(PdfTrailer.InfoKey) ? (internalDictionary[PdfTrailer.InfoKey] as DictionaryObject) : null;
+        public IDictionary<string, PdfObject> Info => internalDictionary.ContainsKey(PdfTrailer.InfoKey) ? (internalDictionary[PdfTrailer.InfoKey] as DictionaryObject) : null;
 
         /// <summary>
         /// An array of two byte-strings constituting a file identifier.

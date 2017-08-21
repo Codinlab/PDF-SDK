@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.Pdf.Attributes;
+using DocumentFormat.Pdf.Exceptions;
 using DocumentFormat.Pdf.IO;
 using System;
 using System.Globalization;
@@ -29,9 +30,27 @@ namespace DocumentFormat.Pdf.Objects
         }
 
         /// <summary>
+        /// Instanciates a new NameObject.
+        /// </summary>
+        /// <param name="value">The object's value.</param>
+        /// <param name="isReadOnly">True if object is read-only, otherwise false.</param>
+        protected NameObject(string value, bool isReadOnly) : base(isReadOnly)
+        {
+            this.value = value;
+        }
+
+        /// <summary>
         /// Gets the object's value.
         /// </summary>
-        public string Value => value;
+        public string Value {
+            get => value;
+            set {
+                if (IsReadOnly)
+                    throw new ObjectReadOnlyException();
+
+                this.value = value;
+            }
+        }
 
         /// <summary>
         /// Writes object to the current stream.

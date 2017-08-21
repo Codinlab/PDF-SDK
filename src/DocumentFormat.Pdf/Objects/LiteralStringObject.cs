@@ -28,6 +28,15 @@ namespace DocumentFormat.Pdf.Objects
         }
 
         /// <summary>
+        /// Instanciates a new StringObject.
+        /// </summary>
+        /// <param name="value">The object's value.</param>
+        /// <param name="isReadOnly">True if object is read-only, otherwise false.</param>
+        protected LiteralStringObject(string value, bool isReadOnly) : base(value, isReadOnly)
+        {
+        }
+
+        /// <summary>
         /// Writes object to the current stream.
         /// </summary>
         /// <param name="writer">The <see cref="PdfWriter"/> to use.</param>
@@ -210,7 +219,7 @@ namespace DocumentFormat.Pdf.Objects
                 }
             }
 
-            return new LiteralStringObject(sb.ToString());
+            return new LiteralStringObject(sb.ToString(), true);
         }
 
         private static bool IsOctalDigit(char c)

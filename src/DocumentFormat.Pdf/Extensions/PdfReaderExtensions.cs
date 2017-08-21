@@ -134,10 +134,10 @@ namespace DocumentFormat.Pdf.Extensions
                     return ReadObject(reader);
                 case 't':
                     reader.ReadToken(BooleanObject.TrueToken);
-                    return new BooleanObject(true);
+                    return new BooleanObject(true, true);
                 case 'f':
                     reader.ReadToken(BooleanObject.FalseToken);
-                    return new BooleanObject(false);
+                    return new BooleanObject(false, true);
                 case 'n':
                     reader.ReadToken(NullObject.NullToken);
                     return new NullObject();

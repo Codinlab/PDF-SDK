@@ -1,8 +1,6 @@
 ﻿using DocumentFormat.Pdf.IO;
 using DocumentFormat.Pdf.Objects;
 using DocumentFormat.Pdf.Structure;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Xunit;

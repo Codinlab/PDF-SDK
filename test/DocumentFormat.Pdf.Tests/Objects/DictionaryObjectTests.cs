@@ -108,12 +108,12 @@ namespace DocumentFormat.Pdf.Tests.Objects
         public void WritesDictionaryObject()
         {
             // Arrange
-            var dictionaryObj = new DictionaryObject(new Dictionary<string, PdfObject> {
+            var dictionaryObj = new DictionaryObject() {
                 { "Null", new NullObject() },
                 { "Boolean", new BooleanObject(true) },
                 { "Name", new NameObject("Name") },
                 { "String", new LiteralStringObject("String") }
-            });
+            };
             string result;
 
             // Act

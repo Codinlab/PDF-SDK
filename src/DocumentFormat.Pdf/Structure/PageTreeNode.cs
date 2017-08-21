@@ -23,6 +23,13 @@ namespace DocumentFormat.Pdf.Structure
         /// <summary>
         /// Instanciates a new PDF Page Tree node.
         /// </summary>
+        public PageTreeNode()
+        {
+        }
+
+        /// <summary>
+        /// Instanciates a new PDF Page Tree node.
+        /// </summary>
         /// <param name="items">Page tree node items.</param>
         public PageTreeNode(IDictionary<string, PdfObject> items) : base(items)
         {

@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.Pdf.Attributes;
+using DocumentFormat.Pdf.Exceptions;
 using DocumentFormat.Pdf.Extensions;
 using DocumentFormat.Pdf.IO;
 using System;
@@ -11,7 +12,7 @@ namespace DocumentFormat.Pdf.Objects
     /// Represents a Pdf Dictionary Object.
     /// </summary>
     [HasDelimiters]
-    public class DictionaryObject : PdfObject, IReadOnlyDictionary<string, PdfObject>
+    public class DictionaryObject : PdfObject, IDictionary<string, PdfObject>
     {
         /// <summary>
         /// DictionaryObject's start token
@@ -34,10 +35,28 @@ namespace DocumentFormat.Pdf.Objects
         protected readonly Dictionary<string, PdfObject> internalDictionary;
 
         /// <summary>
-        /// Instanciates a new StringObject.
+        /// Instanciates a new DictionaryObject.
+        /// </summary>
+        public DictionaryObject()
+        {
+            internalDictionary = new Dictionary<string, PdfObject>();
+        }
+
+        /// <summary>
+        /// Instanciates a new DictionaryObject.
         /// </summary>
         /// <param name="items">Dictionary items</param>
         public DictionaryObject(IDictionary<string, PdfObject> items)
+        {
+            internalDictionary = new Dictionary<string, PdfObject>(items);
+        }
+
+        /// <summary>
+        /// Instanciates a new DictionaryObject.
+        /// </summary>
+        /// <param name="items">Dictionary items</param>
+        /// <param name="isReadOnly">True if object is read-only, otherwise false.</param>
+        internal DictionaryObject(IDictionary<string, PdfObject> items, bool isReadOnly) : base(isReadOnly)
         {
             internalDictionary = new Dictionary<string, PdfObject>(items);
         }
@@ -63,6 +82,44 @@ namespace DocumentFormat.Pdf.Objects
         /// Gets values enumerator.
         /// </summary>
         public IEnumerable<PdfObject> Values => internalDictionary.Values;
+
+        ICollection<string> IDictionary<string, PdfObject>.Keys {
+            get {
+                if (IsReadOnly)
+                {
+                    return new ReadOnlyCollection<string>(internalDictionary.Keys);
+                }
+                else
+                {
+                    return internalDictionary.Keys;
+                }
+            }
+        }
+
+        ICollection<PdfObject> IDictionary<string, PdfObject>.Values {
+            get {
+                if (IsReadOnly)
+                {
+                    return new ReadOnlyCollection<PdfObject>(internalDictionary.Values);
+                }
+                else
+                {
+                    return internalDictionary.Values;
+                }
+            }
+        }
+
+        PdfObject IDictionary<string, PdfObject>.this[string key] {
+            get {
+                return internalDictionary[key];
+            }
+            set {
+                if (IsReadOnly)
+                    throw new ObjectReadOnlyException();
+
+                internalDictionary[key] = value;
+            }
+        }
 
         /// <summary>
         /// Determines whether the DictionaryObject contains the specified key.
@@ -100,7 +157,7 @@ namespace DocumentFormat.Pdf.Objects
         /// <returns>The enumerator.</returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new NotImplementedException();
+            return internalDictionary.GetEnumerator();
         }
 
         /// <summary>
@@ -113,8 +170,6 @@ namespace DocumentFormat.Pdf.Objects
                 throw new ArgumentNullException(nameof(writer));
 
             writer.Write(StartToken);
-
-            HasDelimitersAttribute hasDelimiter;
 
             foreach(var entry in internalDictionary)
             {
@@ -152,7 +207,7 @@ namespace DocumentFormat.Pdf.Objects
                 }
             }
 
-            return new DictionaryObject(elementsDictionary);
+            return new DictionaryObject(elementsDictionary, true);
         }
 
         /// <summary>
@@ -189,5 +244,154 @@ namespace DocumentFormat.Pdf.Objects
 
             return elementsDictionary;
         }
+
+        public void Add(string key, PdfObject value)
+        {
+            if (IsReadOnly)
+                throw new ObjectReadOnlyException();
+
+            internalDictionary.Add(key, value);
+        }
+
+        public bool Remove(string key)
+        {
+            if (IsReadOnly)
+                throw new ObjectReadOnlyException();
+
+            return internalDictionary.Remove(key);
+        }
+
+        public void Add(KeyValuePair<string, PdfObject> item)
+        {
+            Add(item.Key, item.Value);
+        }
+
+        public void Clear()
+        {
+            if (IsReadOnly)
+                throw new ObjectReadOnlyException();
+
+            internalDictionary.Clear();
+        }
+
+        public bool Contains(KeyValuePair<string, PdfObject> item)
+        {
+            if (internalDictionary.ContainsKey(item.Key) && internalDictionary[item.Key] == item.Value)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public void CopyTo(KeyValuePair<string, PdfObject>[] array, int arrayIndex)
+        {
+            if (array == null)
+                throw new ArgumentNullException(nameof(array));
+
+            if (arrayIndex < 0 || arrayIndex > array.Length)
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex));
+
+            if (array.Length - arrayIndex < internalDictionary.Count)
+                throw new ArgumentException(nameof(array), "Array is not large enough.");
+
+            foreach(var entry in internalDictionary)
+            {
+                array[arrayIndex++] = new KeyValuePair<string, PdfObject>(entry.Key, entry.Value);
+            }
+        }
+
+        public bool Remove(KeyValuePair<string, PdfObject> item)
+        {
+            if (internalDictionary.ContainsKey(item.Key) && internalDictionary[item.Key] == item.Value)
+            {
+                internalDictionary.Remove(item.Key);
+                return true;
+            }
+
+            return false;
+        }
+
+        private class ReadOnlyCollection<T> : ICollection<T>, ICollection, IReadOnlyCollection<T>
+        {
+            private readonly ICollection<T> collection;
+            private Object syncRoot;
+
+            internal ReadOnlyCollection(ICollection<T> collection)
+            {
+                this.collection = collection ?? throw new ArgumentNullException(nameof(collection));
+            }
+
+            void ICollection<T>.Add(T item)
+            {
+                throw new NotSupportedException("Cannot add to a read-only collection.");
+            }
+
+            void ICollection<T>.Clear()
+            {
+                throw new NotSupportedException("Cannot clear a read-only collection.");
+            }
+
+            bool ICollection<T>.Contains(T item)
+            {
+                return collection.Contains(item);
+            }
+
+            public void CopyTo(T[] array, int arrayIndex)
+            {
+                collection.CopyTo(array, arrayIndex);
+            }
+
+            public int Count {
+                get { return collection.Count; }
+            }
+
+            bool ICollection<T>.IsReadOnly {
+                get { return true; }
+            }
+
+            bool ICollection<T>.Remove(T item)
+            {
+                throw new NotSupportedException("Cannot remove from a read-only collection.");
+            }
+
+            public IEnumerator<T> GetEnumerator()
+            {
+                return collection.GetEnumerator();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return ((IEnumerable)collection).GetEnumerator();
+            }
+
+            void ICollection.CopyTo(Array array, int index)
+            {
+                throw new NotSupportedException("Connot copy to a non-generic ICollection.");
+            }
+
+            bool ICollection.IsSynchronized {
+                get { return false; }
+            }
+
+            object ICollection.SyncRoot {
+                get {
+                    if (syncRoot == null)
+                    {
+                        ICollection c = collection as ICollection;
+                        if (c != null)
+                        {
+                            syncRoot = c.SyncRoot;
+                        }
+                        else
+                        {
+                            System.Threading.Interlocked.CompareExchange<Object>(ref syncRoot, new Object(), null);
+                        }
+                    }
+                    return syncRoot;
+                }
+            }
+        }
     }
+
 }

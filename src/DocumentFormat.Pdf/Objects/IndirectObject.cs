@@ -1,4 +1,5 @@
-﻿using DocumentFormat.Pdf.Extensions;
+﻿using DocumentFormat.Pdf.Exceptions;
+using DocumentFormat.Pdf.Extensions;
 using DocumentFormat.Pdf.IO;
 using DocumentFormat.Pdf.Structure;
 using System;
@@ -28,7 +29,7 @@ namespace DocumentFormat.Pdf.Objects
         /// <summary>
         /// Referenced PdfObject
         /// </summary>
-        protected readonly PdfObject referencedObject;
+        protected PdfObject referencedObject;
 
         /// <summary>
         /// Instanciates a new IndirectObject
@@ -42,9 +43,29 @@ namespace DocumentFormat.Pdf.Objects
         }
 
         /// <summary>
-        /// Gets referenced PdfObject
+        /// Instanciates a new IndirectObject
         /// </summary>
-        public PdfObject Object => referencedObject;
+        /// <param name="objectId">The <see cref="PdfObjectId"/> of the referenced object</param>
+        /// <param name="referencedObject">Referenced <see cref="PdfObject"/></param>
+        /// <param name="isReadOnly">True if object is read-only, otherwise false.</param>
+        protected IndirectObject(PdfObjectId objectId, PdfObject referencedObject, bool isReadOnly) : base(isReadOnly)
+        {
+            this.objectId = objectId;
+            this.referencedObject = referencedObject;
+        }
+
+        /// <summary>
+        /// Gets or sets referenced PdfObject
+        /// </summary>
+        public PdfObject Object {
+            get => referencedObject;
+            set {
+                if (IsReadOnly)
+                    throw new ObjectReadOnlyException();
+
+                referencedObject = value;
+            }
+        }
 
         /// <summary>
         /// Writes object to the current stream.

@@ -29,6 +29,15 @@ namespace DocumentFormat.Pdf.Objects
         }
 
         /// <summary>
+        /// Instanciates a new HexadecimalStringObject.
+        /// </summary>
+        /// <param name="value">The object's value.</param>
+        /// <param name="isReadOnly">True if object is read-only, otherwise false.</param>
+        protected HexadecimalStringObject(string value, bool isReadOnly) : base(value, isReadOnly)
+        {
+        }
+
+        /// <summary>
         /// Writes object to the current stream.
         /// </summary>
         /// <param name="writer">The <see cref="PdfWriter"/> to use.</param>
@@ -67,7 +76,7 @@ namespace DocumentFormat.Pdf.Objects
 
             if (readChars.Length == 0)
             {
-                return new HexadecimalStringObject("");
+                return new HexadecimalStringObject("", true);
             }
 
             var sb = new StringBuilder();
@@ -104,7 +113,7 @@ namespace DocumentFormat.Pdf.Objects
                 }
             }
 
-            return new HexadecimalStringObject(sb.ToString());
+            return new HexadecimalStringObject(sb.ToString(), true);
         }
     }
 }

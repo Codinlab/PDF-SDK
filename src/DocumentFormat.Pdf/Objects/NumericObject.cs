@@ -1,8 +1,5 @@
 ﻿using DocumentFormat.Pdf.IO;
 using System.Globalization;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DocumentFormat.Pdf.Objects
 {
@@ -12,14 +9,31 @@ namespace DocumentFormat.Pdf.Objects
     public abstract class NumericObject : PdfObject
     {
         /// <summary>
-        /// Gets the object's value as an integer
+        /// Instanciates a new NumericObject
         /// </summary>
-        public abstract int IntergerValue { get; }
+        protected NumericObject()
+        {
+
+        }
 
         /// <summary>
-        /// Gets the object's value as a float
+        /// Instanciates a new NumericObject
         /// </summary>
-        public abstract float RealValue { get; }
+        /// <param name="isReadOnly">True if object is read-only, otherwise false.</param>
+        protected NumericObject(bool isReadOnly) : base(isReadOnly)
+        {
+
+        }
+
+        /// <summary>
+        /// Gets or sets the object's value as an integer
+        /// </summary>
+        public abstract int IntergerValue { get; set; }
+
+        /// <summary>
+        /// Gets or sets the object's value as a float
+        /// </summary>
+        public abstract float RealValue { get; set; }
 
         /// <summary>
         /// Creates a NumericObject object from PdfReader
@@ -31,11 +45,11 @@ namespace DocumentFormat.Pdf.Objects
             var sValue = reader.ReadWhile(c => !Chars.IsDelimiterOrWhiteSpace(c));
             if (sValue.Contains("."))
             {
-                return new RealObject(float.Parse(sValue, CultureInfo.InvariantCulture));
+                return new RealObject(float.Parse(sValue, CultureInfo.InvariantCulture), true);
             }
             else
             {
-                return new IntegerObject(int.Parse(sValue));
+                return new IntegerObject(int.Parse(sValue), true);
             }
         }
     }

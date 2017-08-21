@@ -1,7 +1,6 @@
-﻿using DocumentFormat.Pdf.IO;
+﻿using DocumentFormat.Pdf.Exceptions;
+using DocumentFormat.Pdf.IO;
 using System;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DocumentFormat.Pdf.Objects
 {
@@ -32,10 +31,26 @@ namespace DocumentFormat.Pdf.Objects
         }
 
         /// <summary>
-        /// Gets the object's value.
+        /// Instanciates a new BooleanObject.
+        /// </summary>
+        /// <param name="value">The object's value.</param>
+        /// <param name="isReadOnly">True if object is read-only, otherwise false.</param>
+        internal BooleanObject(bool value, bool isReadOnly) : base(isReadOnly)
+        {
+            this.value = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the object's value.
         /// </summary>
         public bool Value {
             get => value;
+            set {
+                if (IsReadOnly)
+                    throw new ObjectReadOnlyException();
+
+                this.value = value;
+            }
         }
 
         /// <summary>
