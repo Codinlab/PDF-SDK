@@ -1,6 +1,5 @@
 using Microsoft.Extensions.PlatformAbstractions;
 using System.IO;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace DocumentFormat.Pdf.FunctionalTests
@@ -12,7 +11,7 @@ namespace DocumentFormat.Pdf.FunctionalTests
         }
 
         [Theory]
-        [InlineData("AdobeAcrobat.pdf")]
+        [InlineData("AdobeAcrobat.pdf", Skip = "Cross-Reference Streams are not supported.")]
         [InlineData("WordGenerated.pdf")]
         public void OpensSampleFile(string fileName)
         {
