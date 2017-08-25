@@ -3,6 +3,7 @@ using DocumentFormat.Pdf.IO;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace DocumentFormat.Pdf.Structure
 {
@@ -62,7 +63,67 @@ namespace DocumentFormat.Pdf.Structure
             if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
 
-            
+            writer.WriteLine(StartKeyword);
+
+            if (internalDictionary.Count == 0)
+            {
+                // Write empty section
+                writer.WriteLine("0 0");
+                return;
+            }
+
+            // Key : first object number
+            // Value : number of entries
+            var subSections = new Dictionary<int, int>();
+
+            int i = 0, j;
+            var ids = internalDictionary.Keys.ToArray();
+            Array.Sort(ids);
+
+            do
+            {
+                j = i + 1;
+                while(j < ids.Length && ids[j] == ids[j - 1] + 1)
+                {
+                    j++;
+                }
+                subSections.Add(ids[i], j - i);
+                i = j;
+            }
+            while (i < ids.Length);
+
+            foreach(var sub in subSections)
+            {
+                // Write header
+                writer.WriteLine($"{sub.Key} {sub.Value}");
+
+                for (int k = sub.Key; k < sub.Key + sub.Value; k++)
+                {
+                    // Write entry
+                    var entry = internalDictionary[k];
+                    long n;
+                    char l;
+
+                    ushort g = entry.ObjectId.GenerationNumber;
+
+                    if (entry is PdfObjectReference)
+                    {
+                        n = ((PdfObjectReference)entry).Position;
+                        l = 'n';
+                    }
+                    else if (entry is PdfFreeObjectReference)
+                    {
+                        n = ((PdfFreeObjectReference)entry).NextFreeObjectNumber;
+                        l = 'f';
+                    }
+                    else
+                    {
+                        throw new NotSupportedException("Unsupported object reference.");
+                    }
+
+                    writer.Write($"{n.ToString("D10")} {g.ToString("D5")} {l}\r\n");
+                }
+            }
         }
 
         /// <summary>
