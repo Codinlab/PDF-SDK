@@ -10,6 +10,6 @@ namespace DocumentFormat.Pdf.Structure
         /// <summary>
         /// Gets section's entries.
         /// </summary>
-        IReadOnlyDictionary<PdfObjectId, PdfObjectReferenceBase> Entries { get; }
+        IReadOnlyDictionary<int, PdfObjectReferenceBase> Entries { get; }
     }
 }

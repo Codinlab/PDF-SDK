@@ -17,12 +17,12 @@ namespace DocumentFormat.Pdf.Structure
         /// <summary>
         /// Internal list of Cross-Reference entries.
         /// </summary>
-        private readonly Dictionary<PdfObjectId, PdfObjectReferenceBase> internalDictionary;
+        private readonly Dictionary<int, PdfObjectReferenceBase> internalDictionary;
 
         /// <summary>
         /// Internal list of updated Cross-Reference entries.
         /// </summary>
-        private Dictionary<PdfObjectId, PdfObjectReferenceBase> updatedEntries = new Dictionary<PdfObjectId, PdfObjectReferenceBase>();
+        private Dictionary<int, PdfObjectReferenceBase> updatedEntries = new Dictionary<int, PdfObjectReferenceBase>();
 
         /// <summary>
         /// The total number of entries in the file’s cross-reference table,
@@ -37,7 +37,7 @@ namespace DocumentFormat.Pdf.Structure
         /// </summary>
         public XRefTable()
         {
-            internalDictionary = new Dictionary<PdfObjectId, PdfObjectReferenceBase>();
+            internalDictionary = new Dictionary<int, PdfObjectReferenceBase>();
             size = 1;
         }
 
@@ -57,7 +57,7 @@ namespace DocumentFormat.Pdf.Structure
             if (entries == null)
                 throw new NullReferenceException("Section's entries dictionary cannot be null");
 
-            internalDictionary = new Dictionary<PdfObjectId, PdfObjectReferenceBase>();
+            internalDictionary = new Dictionary<int, PdfObjectReferenceBase>();
             this.size = size;
 
             foreach (var entry in entries)

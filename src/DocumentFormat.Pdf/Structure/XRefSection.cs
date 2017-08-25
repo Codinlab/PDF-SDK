@@ -21,23 +21,19 @@ namespace DocumentFormat.Pdf.Structure
         /// </summary>
         public const string StartKeyword = "xref";
 
-        private readonly Dictionary<PdfObjectId, PdfObjectReferenceBase> internalDictionary;
+        private readonly Dictionary<int, PdfObjectReferenceBase> internalDictionary;
 
+        #region Constructors
         /// <summary>
         /// Instanciates a new PDF Cross-Reference Section.
         /// </summary>
-        public XRefSection() : this(false)
+        /// <param name="entries">TCross-Reference Section entries.</param>
+        public XRefSection(IDictionary<int, PdfObjectReferenceBase> entries)
         {
-        }
+            if (entries == null)
+                throw new ArgumentNullException(nameof(entries));
 
-        /// <summary>
-        /// Instanciates a new PDF Cross-Reference Section.
-        /// </summary>
-        /// <param name="isReadOnly">True if object is read-only, otherwise false.</param>
-        public XRefSection(bool isReadOnly)
-        {
-            IsReadOnly = isReadOnly;
-            internalDictionary = new Dictionary<PdfObjectId, PdfObjectReferenceBase>();
+            internalDictionary = new Dictionary<int, PdfObjectReferenceBase>(entries);
         }
 
         /// <summary>
@@ -45,15 +41,29 @@ namespace DocumentFormat.Pdf.Structure
         /// </summary>
         /// <param name="entries">TCross-Reference Section entries.</param>
         /// <param name="isReadOnly">True if object is read-only, otherwise false.</param>
-        private XRefSection(Dictionary<PdfObjectId, PdfObjectReferenceBase> entries, bool isReadOnly)
+        private XRefSection(Dictionary<int, PdfObjectReferenceBase> entries, bool isReadOnly)
         {
             internalDictionary = entries;
         }
 
+        #endregion
+
         /// <summary>
         /// Gets the list of Cross-Reference Stream's entries.
         /// </summary>
-        public IReadOnlyDictionary<PdfObjectId, PdfObjectReferenceBase> Entries => new ReadOnlyDictionary<PdfObjectId, PdfObjectReferenceBase>(internalDictionary);
+        public IReadOnlyDictionary<int, PdfObjectReferenceBase> Entries => new ReadOnlyDictionary<int, PdfObjectReferenceBase>(internalDictionary);
+
+        /// <summary>
+        /// Writes PDF Cross-Reference Section instance to the current stream.
+        /// </summary>
+        /// <param name="writer">The <see cref="PdfWriter"/> to use.</param>
+        public void Write(PdfWriter writer)
+        {
+            if (writer == null)
+                throw new ArgumentNullException(nameof(writer));
+
+            
+        }
 
         /// <summary>
         /// Reads a section and append entries.
@@ -64,7 +74,7 @@ namespace DocumentFormat.Pdf.Structure
             if (reader == null)
                 throw new ArgumentNullException(nameof(reader));
 
-            var entries = new Dictionary<PdfObjectId, PdfObjectReferenceBase>();
+            var entries = new Dictionary<int, PdfObjectReferenceBase>();
             string subsectionHeader;
             var entryBuffer = new char[20];
 
@@ -90,20 +100,21 @@ namespace DocumentFormat.Pdf.Structure
 
                     PdfObjectReferenceBase objectReference;
 
+                    var objectId = new PdfObjectId(i, ushort.Parse(new string(entryBuffer, 11, 5)));
                     switch (entryBuffer[17])
                     {
                         case 'n':
-                            objectReference = new PdfObjectReference(long.Parse(new string(entryBuffer, 0, 10)));
+                            objectReference = new PdfObjectReference(objectId, long.Parse(new string(entryBuffer, 0, 10)));
                             break;
                         case 'f':
-                            objectReference = new PdfFreeObjectReference(int.Parse(new string(entryBuffer, 0, 10)));
+                            objectReference = new PdfFreeObjectReference(objectId, int.Parse(new string(entryBuffer, 0, 10)));
                             break;
                         default:
                             throw new FormatException("Invalid Cross-Reference entry");
                     }
 
                     entries.Add(
-                        new PdfObjectId(i, ushort.Parse(new string(entryBuffer, 11, 5))),
+                        i,
                         objectReference
                     );
                 }

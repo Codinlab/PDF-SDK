@@ -13,8 +13,9 @@ namespace DocumentFormat.Pdf.Structure
         /// Instanciates a new PdfObjectReference
         /// Reference is marked in use by default
         /// </summary>
+        /// <param name="objectId">The referenced object's <see cref="PdfObjectId"/>.</param>
         /// <param name="position">The position of the object</param>
-        public PdfObjectReference(long position)
+        public PdfObjectReference(PdfObjectId objectId, long position) : base(objectId)
         {
             this.position = position;
         }

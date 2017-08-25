@@ -96,7 +96,7 @@ namespace DocumentFormat.Pdf.Structure
         /// <summary>
         /// Gets the list of Cross-Reference Stream's entries.
         /// </summary>
-        public IReadOnlyDictionary<PdfObjectId, PdfObjectReferenceBase> Entries => throw new NotImplementedException();
+        public IReadOnlyDictionary<int, PdfObjectReferenceBase> Entries => throw new NotImplementedException();
 
         /// <summary>
         /// Creates a StreamObject from PdfReader.
