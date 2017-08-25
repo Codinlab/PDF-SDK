@@ -1,50 +1,56 @@
-﻿using DocumentFormat.Pdf.Objects;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using DocumentFormat.Pdf.Objects;
+using System.Linq;
 
 namespace DocumentFormat.Pdf.Structure
 {
     /// <summary>
-    /// Represents base class for PDF Page Tree nodes.
+    /// Represents the PDF Page Tree
     /// </summary>
-    public abstract class PageTreeNode : DictionaryObject
+    public class PageTreeNode : PageTreeItem
     {
         /// <summary>
-        /// When overrided, gets the Type entry value.
+        /// The Type entry value.
         /// </summary>
-        protected abstract string TypeValue { get; }
+        protected override string TypeValue => "Pages";
 
         /// <summary>
-        /// The Pages key name
+        /// The Kids key name
         /// </summary>
-        private const string ParentKey = "Parent";
+        private const string KidsKey = "Kids";
+
+        /// <summary>
+        /// The Count key name
+        /// </summary>
+        private const string CountKey = "Count";
 
         /// <summary>
         /// Instanciates a new PDF Page Tree node.
         /// </summary>
-        public PageTreeNode()
+        public PageTreeNode() : base()
         {
         }
 
         /// <summary>
         /// Instanciates a new PDF Page Tree node.
         /// </summary>
-        /// <param name="items">Page tree node items.</param>
-        public PageTreeNode(IDictionary<string, PdfObject> items) : base(items)
+        /// <param name="items">Page tree items.</param>
+        /// <param name="isReadOnly">True if object is read-only, otherwise false.</param>
+        public PageTreeNode(IDictionary<string, PdfObject> items, bool isReadOnly) : base(items, isReadOnly)
         {
         }
 
         /// <summary>
-        /// The type of PDF object that this dictionary describes;
-        /// must be Pages for a page tree node.
+        /// An array of indirect references to the immediate children of this node.
+        /// The children may be page objects or other page tree nodes.
         /// </summary>
-        public string Type => (internalDictionary[TypeKey] as NameObject).Value;
+        public IEnumerable<PageTreeItem> Kids => internalDictionary.ContainsKey(KidsKey) ? (internalDictionary[KidsKey] as ArrayObject).Select(item => item as PageTreeItem) : null;
 
         /// <summary>
-        /// The page tree node that is the root of the document’s page tree
+        /// The number of leaf nodes (page objects) that are descendants of this node within the page tree.
         /// </summary>
-        public PageTreeNode Parent => internalDictionary[ParentKey] as PageTreeNode;
-
+        public new int Count => (internalDictionary[CountKey] as IntegerObject).IntergerValue;
     }
 }

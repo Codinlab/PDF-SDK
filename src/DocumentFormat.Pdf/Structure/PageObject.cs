@@ -7,7 +7,7 @@ namespace DocumentFormat.Pdf.Structure
     /// <summary>
     /// Represents the PDF Page Object
     /// </summary>
-    public class PageObject : PageTreeNode
+    public class PageObject : PageTreeItem
     {
         /// <summary>
         /// The Type entry value.
@@ -32,8 +32,16 @@ namespace DocumentFormat.Pdf.Structure
         /// <summary>
         /// Instanciates a new PDF Page Object.
         /// </summary>
+        public PageObject() : base()
+        {
+        }
+
+        /// <summary>
+        /// Instanciates a new PDF Page Object.
+        /// </summary>
         /// <param name="items">Page items.</param>
-        public PageObject(IDictionary<string, PdfObject> items) : base(items)
+        /// <param name="isReadOnly">True if object is read-only, otherwise false.</param>
+        public PageObject(IDictionary<string, PdfObject> items, bool isReadOnly) : base(items, isReadOnly)
         {
         }
 
