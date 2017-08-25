@@ -74,16 +74,20 @@ namespace DocumentFormat.Pdf.Structure
             if (reader == null)
                 throw new ArgumentNullException(nameof(reader));
 
+            reader.ReadToken(StartKeyword);
+            reader.MoveToNonWhiteSpace();
+
             var entries = new Dictionary<int, PdfObjectReferenceBase>();
             string subsectionHeader;
             var entryBuffer = new char[20];
 
-            while ((subsectionHeader = reader.ReadLine()) != PdfTrailer.StartKeyword)
+            while (char.IsDigit(reader.Peek()))
             {
                 int separatorIdx, firstId, count;
 
                 try
                 {
+                    subsectionHeader = reader.ReadLine();
                     separatorIdx = subsectionHeader.IndexOf(' ');
                     firstId = Int32.Parse(subsectionHeader.Substring(0, separatorIdx));
                     count = Int32.Parse(subsectionHeader.Substring(separatorIdx + 1));

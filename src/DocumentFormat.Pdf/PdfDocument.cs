@@ -67,23 +67,27 @@ namespace DocumentFormat.Pdf
                 // Read Cross-Reference Table
                 IPdfTrailer trailer;
                 IXRefSection xrefSection;
-                string fisrtLine;
+                char fisrtChar;
 
                 do
                 {
-                    fisrtLine = reader.ReadLine();
-                    if (fisrtLine == XRefSection.StartKeyword)
+                    fisrtChar = reader.Peek();
+                    if (fisrtChar == XRefSection.StartKeyword[0])
                     {
                         // Cross-Reference Section
                         xrefSection = XRefSection.FromReader(reader);
                         trailer = PdfTrailer.FromReader(reader);
                     }
-                    else
+                    else if (char.IsDigit(fisrtChar))
                     {
                         // Cross-Reference Stream
                         var xrefStream = XRefStream.FromReader(reader);
                         trailer = xrefStream;
                         xrefSection = xrefStream;
+                    }
+                    else
+                    {
+                        throw new FormatException("Invalid Cross-Reference section.");
                     }
 
                     if(document.xrefTable == null)

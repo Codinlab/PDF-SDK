@@ -3,6 +3,7 @@ using DocumentFormat.Pdf.Objects;
 using System.Threading.Tasks;
 using DocumentFormat.Pdf.IO;
 using System;
+using DocumentFormat.Pdf.Extensions;
 
 namespace DocumentFormat.Pdf.Structure
 {
@@ -78,6 +79,9 @@ namespace DocumentFormat.Pdf.Structure
         {
             if (reader == null)
                 throw new ArgumentNullException(nameof(reader));
+
+            reader.ReadToken(StartKeyword);
+            reader.MoveToNonWhiteSpace();
 
             return new PdfTrailer(ParseDictionary(reader));
         }
