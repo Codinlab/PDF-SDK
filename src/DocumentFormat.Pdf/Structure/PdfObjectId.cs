@@ -8,6 +8,11 @@ namespace DocumentFormat.Pdf.Structure
     /// </summary>
     public struct PdfObjectId
     {
+        /// <summary>
+        /// Reprensents the zero object id.
+        /// </summary>
+        public static PdfObjectId Zero = new PdfObjectId(0, ushort.MaxValue);
+
         private int objectNumber;
         private ushort generationNumber;
 

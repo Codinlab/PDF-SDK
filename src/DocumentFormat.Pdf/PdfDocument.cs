@@ -3,7 +3,6 @@ using DocumentFormat.Pdf.IO;
 using DocumentFormat.Pdf.Structure;
 using System;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace DocumentFormat.Pdf
 {
@@ -66,27 +65,45 @@ namespace DocumentFormat.Pdf
                 reader.Position = reader.GetXRefPosition();
 
                 // Read Cross-Reference Table
-                document.xrefTable = new XRefTable();
                 IPdfTrailer trailer;
+                IXRefSection xrefSection;
                 string fisrtLine;
 
                 do
                 {
                     fisrtLine = reader.ReadLine();
-                    if (fisrtLine == XRefTable.StartKeyword)
+                    if (fisrtLine == XRefSection.StartKeyword)
                     {
-                        document.xrefTable.ReadSection(reader);
+                        // Cross-Reference Section
+                        xrefSection = XRefSection.FromReader(reader);
                         trailer = PdfTrailer.FromReader(reader);
-                        if (document.trailer == null)
-                        {
-                            document.trailer = trailer;
-                        }
                     }
                     else
                     {
                         // Cross-Reference Stream
-                        throw new NotImplementedException();
+                        var xrefStream = XRefStream.FromReader(reader);
+                        trailer = xrefStream;
+                        xrefSection = xrefStream;
                     }
+
+                    if(document.xrefTable == null)
+                    {
+                        // Initialize document's Cross-Reference Table
+                        document.xrefTable = new XRefTable(xrefSection, trailer.Size);
+                    }
+                    else
+                    {
+                        // Register section
+                        document.xrefTable.AddSection(xrefSection);
+                    }
+
+                    // Keep instance of last trailer
+                    if (document.trailer == null)
+                    {
+                        document.trailer = trailer;
+                    }
+
+                    // Seek to previous trailer
                     if (trailer.Prev.HasValue)
                     {
                         reader.Position = trailer.Prev.Value;

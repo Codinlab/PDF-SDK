@@ -1,16 +1,22 @@
-﻿using DocumentFormat.Pdf.Objects;
+﻿using DocumentFormat.Pdf.Extensions;
+using DocumentFormat.Pdf.IO;
+using DocumentFormat.Pdf.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace DocumentFormat.Pdf.Structure
 {
     /// <summary>
     /// Represents a Cross-Reference Stream object.
     /// </summary>
-    public class XRefStream : StreamObject, IPdfTrailer
+    public class XRefStream : StreamObject, IXRefSection, IPdfTrailer
     {
+        /// <summary>
+        /// The Type key name
+        /// </summary>
+        private const string TypeKey = "Type";
+
         /// <summary>
         /// The Type entry value.
         /// </summary>
@@ -86,5 +92,46 @@ namespace DocumentFormat.Pdf.Structure
         /// An array of two byte-strings constituting a file identifier.
         /// </summary>
         public IEnumerable<PdfObject> ID => internalDictionary.ContainsKey(PdfTrailer.IdKey) ? (internalDictionary[PdfTrailer.IdKey] as ArrayObject) : null;
+
+        /// <summary>
+        /// Gets the list of Cross-Reference Stream's entries.
+        /// </summary>
+        public IReadOnlyDictionary<PdfObjectId, PdfObjectReferenceBase> Entries => throw new NotImplementedException();
+
+        /// <summary>
+        /// Creates a StreamObject from PdfReader.
+        /// </summary>
+        /// <param name="reader">The <see cref="PdfReader"/> to use.</param>
+        /// <returns>Created StreamObject.</returns>
+        public static new XRefStream FromReader(PdfReader reader)
+        {
+            var streamDictionary = ParseDictionary(reader);
+
+            reader.ReadToken(StartKeyword);
+
+            char nextChar = reader.Read();
+            if (nextChar == Chars.CR)
+            {
+                if (reader.Read() != Chars.LF)
+                {
+                    throw new FormatException("Bad end of line after stream keyword.");
+                }
+            }
+            else if (nextChar != Chars.LF)
+            {
+                throw new FormatException("Bad end of line after stream keyword.");
+            }
+
+            var length = (streamDictionary[LengthKey] as IntegerObject).IntergerValue;
+            var data = new byte[length];
+
+            // Read data
+            var read = reader.Read(data, 0, length);
+
+            if (read != length)
+                throw new FormatException("Bad stream length.");
+
+            return new XRefStream(streamDictionary, data, true);
+        }
     }
 }

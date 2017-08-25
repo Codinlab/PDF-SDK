@@ -1,15 +1,13 @@
-﻿using DocumentFormat.Pdf.Extensions;
-using DocumentFormat.Pdf.IO;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 
 namespace DocumentFormat.Pdf.Structure
 {
     /// <summary>
-    /// Represents the Pdf Cross-Reference Table
+    /// Represents the Pdf Cross-Reference Table.
     /// </summary>
-    public class XRefTable : IDictionary<PdfObjectId, PdfObjectReference>
+    public class XRefTable
     {
         /// <summary>
         /// The startxref keyword
@@ -17,138 +15,78 @@ namespace DocumentFormat.Pdf.Structure
         public const string StartXRefToken = "startxref";
 
         /// <summary>
-        /// The xref keyword
+        /// Internal list of Cross-Reference entries.
         /// </summary>
-        public const string StartKeyword = "xref";
-
-        private readonly Dictionary<PdfObjectId, PdfObjectReference> internalDictionary;
+        private readonly Dictionary<PdfObjectId, PdfObjectReferenceBase> internalDictionary;
 
         /// <summary>
-        /// Instanciates a new PDF Cross-Reference Table
+        /// Internal list of updated Cross-Reference entries.
+        /// </summary>
+        private Dictionary<PdfObjectId, PdfObjectReferenceBase> updatedEntries = new Dictionary<PdfObjectId, PdfObjectReferenceBase>();
+
+        /// <summary>
+        /// The total number of entries in the file’s cross-reference table,
+        /// as defined by the combination of the original section and all update sections.
+        /// Equivalently, this value is 1 greater than the highest object number used in the file.
+        /// </summary>
+        private int size;
+
+        #region Constructors
+        /// <summary>
+        /// Instanciates a new PDF Cross-Reference Table.
         /// </summary>
         public XRefTable()
         {
-            internalDictionary = new Dictionary<PdfObjectId, PdfObjectReference>();
+            internalDictionary = new Dictionary<PdfObjectId, PdfObjectReferenceBase>();
+            size = 1;
         }
 
-        #region IDictionary implementation
-        public PdfObjectReference this[PdfObjectId key] {
-            get => internalDictionary[key];
-            set => internalDictionary[key] = value;
-        }
-
-        public ICollection<PdfObjectId> Keys => internalDictionary.Keys;
-
-        public ICollection<PdfObjectReference> Values => internalDictionary.Values;
-
-        public int Count => internalDictionary.Count;
-
-        public bool IsReadOnly => false;
-
-        public void Add(PdfObjectId key, PdfObjectReference value)
+        /// <summary>
+        /// Instanciates a new PDF Cross-Reference Table with an initial <see cref="IXRefSection"/>.
+        /// </summary>
+        /// <param name="section">The initial Cross-Reference section.</param>
+        /// <param name="size">The total number of entries in the file’s cross-reference table,
+        /// as defined by the combination of the original section and all update sections.</param>
+        public XRefTable(IXRefSection section, int size)
         {
-            internalDictionary.Add(key, value);
-        }
+            if (section == null)
+                throw new ArgumentNullException(nameof(section));
 
-        public void Add(KeyValuePair<PdfObjectId, PdfObjectReference> item)
-        {
-            internalDictionary.Add(item.Key, item.Value);
-        }
+            var entries = section.Entries;
 
-        public void Clear()
-        {
-            internalDictionary.Clear();
-        }
+            if (entries == null)
+                throw new NullReferenceException("Section's entries dictionary cannot be null");
 
-        public bool Contains(KeyValuePair<PdfObjectId, PdfObjectReference> item)
-        {
-            return internalDictionary.ContainsKey(item.Key) && internalDictionary[item.Key] == item.Value;
-        }
+            internalDictionary = new Dictionary<PdfObjectId, PdfObjectReferenceBase>();
+            this.size = size;
 
-        public bool ContainsKey(PdfObjectId key)
-        {
-            return internalDictionary.ContainsKey(key);
-        }
-
-        public void CopyTo(KeyValuePair<PdfObjectId, PdfObjectReference>[] array, int arrayIndex)
-        {
-            foreach(var item in internalDictionary)
+            foreach (var entry in entries)
             {
-                array[arrayIndex] = item;
-                arrayIndex++;
+                internalDictionary.Add(entry.Key, entry.Value);
             }
-        }
-
-        public IEnumerator<KeyValuePair<PdfObjectId, PdfObjectReference>> GetEnumerator()
-        {
-            return internalDictionary.GetEnumerator();
-        }
-
-        public bool Remove(PdfObjectId key)
-        {
-            return internalDictionary.Remove(key);
-        }
-
-        public bool Remove(KeyValuePair<PdfObjectId, PdfObjectReference> item)
-        {
-            if (internalDictionary.ContainsKey(item.Key))
-            {
-                return internalDictionary.Remove(item.Key);
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public bool TryGetValue(PdfObjectId key, out PdfObjectReference value)
-        {
-            return internalDictionary.TryGetValue(key, out value);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return internalDictionary.GetEnumerator();
         }
 
         #endregion
 
         /// <summary>
-        /// Reads a section and append entries.
+        /// Registers a new <see cref="IXRefSection"/> into Cross-Reference Table.
         /// </summary>
-        /// <param name="reader">The <see cref="PdfReader"/> to use.</param>
-        public void ReadSection(PdfReader reader)
+        /// <param name="section">The Cross-Reference section to add.</param>
+        public void AddSection(IXRefSection section)
         {
-            if (reader == null)
-                throw new ArgumentNullException(nameof(reader));
+            if (section == null)
+                throw new ArgumentNullException(nameof(section));
 
-            string subsectionHeader;
-            var entryBuffer = new char[20];
+            var entries = section.Entries;
 
-            while ((subsectionHeader = reader.ReadLine()) != PdfTrailer.StartKeyword)
+            if(entries == null)
+                return;
+
+            foreach (var entry in entries)
             {
-                int separatorIdx, firstId, count;
-
-                try
+                if (!internalDictionary.ContainsKey(entry.Key))
                 {
-                    separatorIdx = subsectionHeader.IndexOf(' ');
-                    firstId = Int32.Parse(subsectionHeader.Substring(0, separatorIdx));
-                    count = Int32.Parse(subsectionHeader.Substring(separatorIdx + 1));
-                }
-                catch
-                {
-                    throw new FormatException("Invalid Cross-Reference Table subsection header.");
-                }
-
-                for (int i = firstId; i < firstId + count; i++)
-                {
-                    // Each entry is exactly 20 bytes long, including the end-of - line marker.
-                    reader.Read(entryBuffer, 0, entryBuffer.Length);
-
-                    internalDictionary.Add(
-                        new PdfObjectId(i, ushort.Parse(new string(entryBuffer, 11, 5))),
-                        new PdfObjectReference(long.Parse(new string(entryBuffer, 0, 10)), entryBuffer[17] == 'n')
-                    );
+                    internalDictionary.Add(entry.Key, entry.Value);
                 }
             }
         }
