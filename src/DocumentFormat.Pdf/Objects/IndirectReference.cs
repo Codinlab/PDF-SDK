@@ -21,7 +21,7 @@ namespace DocumentFormat.Pdf.Objects
         /// Throws NotSupportedException.
         /// </summary>
         /// <param name="writer">The <see cref="PdfWriter"/> to use.</param>
-        public override void Write(PdfWriter writer)
+        public override void WriteObject(PdfWriter writer)
         {
             throw new NotSupportedException("Connot write an unresolved object.");
         }

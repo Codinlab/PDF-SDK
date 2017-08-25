@@ -58,7 +58,7 @@ namespace DocumentFormat.Pdf.Tests.Objects
             {
                 using (var writer = new PdfWriter(pdfStream))
                 {
-                    indRef.WriteReference(writer);
+                    indRef.Write(writer);
                     writer.Flush();
                     result = ReadAsString(pdfStream);
                 }
@@ -80,7 +80,7 @@ namespace DocumentFormat.Pdf.Tests.Objects
             {
                 using (var writer = new PdfWriter(pdfStream))
                 {
-                    indirectObj.Write(writer);
+                    indirectObj.WriteObject(writer);
                     writer.Flush();
                     result = ReadAsString(pdfStream);
                 }

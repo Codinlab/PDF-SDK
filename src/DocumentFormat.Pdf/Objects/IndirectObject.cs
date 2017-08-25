@@ -73,10 +73,22 @@ namespace DocumentFormat.Pdf.Objects
         }
 
         /// <summary>
-        /// Writes object to the current stream.
+        /// Writes indirect object reference to the current stream.
         /// </summary>
         /// <param name="writer">The <see cref="PdfWriter"/> to use.</param>
         public override void Write(PdfWriter writer)
+        {
+            if (writer == null)
+                throw new ArgumentNullException(nameof(writer));
+
+            objectId.WriteReference(writer);
+        }
+
+        /// <summary>
+        /// Writes indirect object to the current stream.
+        /// </summary>
+        /// <param name="writer">The <see cref="PdfWriter"/> to use.</param>
+        public virtual void WriteObject(PdfWriter writer)
         {
             if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
@@ -87,18 +99,6 @@ namespace DocumentFormat.Pdf.Objects
 
             writer.WriteLine();
             writer.WriteLine(EndKeyword);
-        }
-
-        /// <summary>
-        /// Writes indirect object reference to the current stream.
-        /// </summary>
-        /// <param name="writer">The <see cref="PdfWriter"/> to use.</param>
-        public void WriteReference(PdfWriter writer)
-        {
-            if (writer == null)
-                throw new ArgumentNullException(nameof(writer));
-
-            objectId.WriteReference(writer);
         }
 
         /// <summary>
