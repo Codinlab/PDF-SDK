@@ -48,5 +48,25 @@ namespace DocumentFormat.Pdf.Extensions
 
             return target.GetType().GetTypeInfo().GetCustomAttribute<HasDelimitersAttribute>()?.AtEnd ?? false;
         }
+
+        /// <summary>
+        /// Casts a <see cref="PdfObject"/> to the specified type.
+        /// </summary>
+        /// <typeparam name="T">The expected object type.</typeparam>
+        /// <param name="srcObject">The object to cast.</param>
+        /// <returns>Casted object.</returns>
+        public static T As<T>(this PdfObject srcObject)
+            where T : PdfObject
+        {
+            if (srcObject == null)
+                throw new ArgumentNullException(nameof(srcObject));
+
+            if (srcObject is T)
+                return (T)srcObject;
+            else if (srcObject is IndirectObject<T>)
+                return ((IndirectObject<T>)srcObject).Object;
+            else
+                throw new InvalidCastException($"Cannot convert {nameof(srcObject)} to {typeof(T).Name}.");
+        }
     }
 }

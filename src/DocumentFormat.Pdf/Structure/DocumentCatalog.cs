@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.Pdf.Exceptions;
+using DocumentFormat.Pdf.Extensions;
 using DocumentFormat.Pdf.Objects;
 using System;
 using System.Collections.Generic;
@@ -31,7 +32,6 @@ namespace DocumentFormat.Pdf.Structure
         /// <param name="pageTree">The <see cref="PageTreeNode"/> that is the root of the document’s page tree.</param>
         public DocumentCatalog(PageTreeNode pageTree)
         {
-            internalDictionary[TypeKey] = new NameObject(TypeValue);
             internalDictionary[PagesKey] = pageTree ?? throw new ArgumentNullException(nameof(pageTree));
         }
 
@@ -41,7 +41,6 @@ namespace DocumentFormat.Pdf.Structure
         /// <param name="pageTree">The <see cref="IndirectObject{PageTree}"/> that is the root of the document’s page tree.</param>
         public DocumentCatalog(IndirectObject<PageTreeNode> pageTree)
         {
-            internalDictionary[TypeKey] = new NameObject(TypeValue);
             internalDictionary[PagesKey] = pageTree ?? throw new ArgumentNullException(nameof(pageTree));
         }
 
@@ -52,13 +51,9 @@ namespace DocumentFormat.Pdf.Structure
         /// <param name="isReadOnly">True if object is read-only, otherwise false.</param>
         internal DocumentCatalog(IDictionary<string, PdfObject> items, bool isReadOnly) : base(items, isReadOnly)
         {
+            if (!internalDictionary.ContainsKey(PagesKey))
+                throw new InvalidOperationException($"{PagesKey} entry is required.");
         }
-
-        /// <summary>
-        /// Gets or sets the  type of PDF object that this dictionary describes;
-        /// must be Catalog for the catalog dictionary.
-        /// </summary>
-        public string Type => (internalDictionary[TypeKey] as NameObject).Value;
 
         /// <summary>
         /// Gets or sets the version of the PDF specification to which the document conforms.
@@ -87,7 +82,7 @@ namespace DocumentFormat.Pdf.Structure
         /// </summary>
         public PageTreeNode Pages {
             get {
-                return internalDictionary[PagesKey] as PageTreeNode;
+                return internalDictionary[PagesKey].As<PageTreeNode>();
             }
         }
     }
