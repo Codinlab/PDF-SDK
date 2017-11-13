@@ -24,7 +24,7 @@ namespace DocumentFormat.Pdf.Structure
         /// <summary>
         /// Gets generation number.
         /// </summary>
-        public int GenerationNumber => generationNumber;
+        public ushort GenerationNumber => generationNumber;
 
         /// <summary>
         /// Instanciates a PdfObjectId based on its object number.
