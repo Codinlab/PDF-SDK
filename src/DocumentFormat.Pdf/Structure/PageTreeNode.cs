@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using DocumentFormat.Pdf.Extensions;
 using DocumentFormat.Pdf.Objects;
-using System.Linq;
+using System;
+using System.Collections.Generic;
 
 namespace DocumentFormat.Pdf.Structure
 {
@@ -26,11 +25,13 @@ namespace DocumentFormat.Pdf.Structure
         /// </summary>
         private const string CountKey = "Count";
 
+        #region Constructors
         /// <summary>
         /// Instanciates a new PDF Page Tree node.
         /// </summary>
         public PageTreeNode() : base()
         {
+            internalDictionary[KidsKey] = new ArrayObject();
         }
 
         /// <summary>
@@ -40,17 +41,28 @@ namespace DocumentFormat.Pdf.Structure
         /// <param name="isReadOnly">True if object is read-only, otherwise false.</param>
         public PageTreeNode(IDictionary<string, PdfObject> items, bool isReadOnly) : base(items, isReadOnly)
         {
+            if (!internalDictionary.ContainsKey(KidsKey))
+                throw new InvalidOperationException($"{KidsKey} entry is required.");
+
+            if (!internalDictionary.ContainsKey(CountKey))
+                throw new InvalidOperationException($"{CountKey} entry is required.");
         }
+
+        #endregion
 
         /// <summary>
         /// An array of indirect references to the immediate children of this node.
         /// The children may be page objects or other page tree nodes.
         /// </summary>
-        public IEnumerable<PageTreeItem> Kids => internalDictionary.ContainsKey(KidsKey) ? (internalDictionary[KidsKey] as ArrayObject).Select(item => item as PageTreeItem) : null;
+        public ArrayObject Kids {
+            get {
+                return internalDictionary[KidsKey].As<ArrayObject>();
+            }
+        }
 
         /// <summary>
         /// The number of leaf nodes (page objects) that are descendants of this node within the page tree.
         /// </summary>
-        public new int Count => (internalDictionary[CountKey] as IntegerObject).IntergerValue;
+        public int NodesCount => (internalDictionary[CountKey] as IntegerObject).IntergerValue;
     }
 }

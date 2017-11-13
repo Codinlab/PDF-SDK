@@ -1,24 +1,17 @@
 ﻿using DocumentFormat.Pdf.Objects;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace DocumentFormat.Pdf.Structure
 {
     /// <summary>
     /// Represents base class for PDF Page Tree nodes.
     /// </summary>
-    public abstract class PageTreeItem : DictionaryObject
+    public abstract class PageTreeItem : TypedDictionaryObject
     {
-        /// <summary>
-        /// When overrided, gets the Type entry value.
-        /// </summary>
-        protected abstract string TypeValue { get; }
-
         /// <summary>
         /// The Pages key name
         /// </summary>
-        private const string ParentKey = "Parent";
+        protected const string ParentKey = "Parent";
 
         /// <summary>
         /// Instanciates a new PDF Page Tree node.
@@ -38,15 +31,14 @@ namespace DocumentFormat.Pdf.Structure
         }
 
         /// <summary>
-        /// The type of PDF object that this dictionary describes;
-        /// must be Pages for a page tree node.
-        /// </summary>
-        public string Type => (internalDictionary[TypeKey] as NameObject).Value;
-
-        /// <summary>
         /// The page tree node that is the immediate parent of this one.
         /// </summary>
-        public PageTreeNode Parent => internalDictionary[ParentKey] as PageTreeNode;
+        public PageTreeNode Parent {
+            get {
+                // Must be an indirect reference.
+                return internalDictionary.ContainsKey(ParentKey) ? (internalDictionary[ParentKey] as IndirectObject<PageTreeNode>).Object : null;
+            }
+        }
 
     }
 }

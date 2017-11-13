@@ -25,15 +25,11 @@ namespace DocumentFormat.Pdf.Objects
         public const string EndToken = ">>";
 
         /// <summary>
-        /// The Type key name
-        /// </summary>
-        protected const string TypeKey = "Type";
-
-        /// <summary>
         /// Represents the internaly hold elements dictionary
         /// </summary>
         protected readonly Dictionary<string, PdfObject> internalDictionary;
 
+        #region Constructors
         /// <summary>
         /// Instanciates a new DictionaryObject.
         /// </summary>
@@ -60,6 +56,8 @@ namespace DocumentFormat.Pdf.Objects
         {
             internalDictionary = new Dictionary<string, PdfObject>(items);
         }
+
+        #endregion
 
         /// <summary>
         /// Gets <see cref="PdfObject"/> with specified key.

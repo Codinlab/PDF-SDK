@@ -32,8 +32,9 @@ namespace DocumentFormat.Pdf.Structure
         /// <summary>
         /// Instanciates a new PDF Page Object.
         /// </summary>
-        public PageObject() : base()
+        public PageObject(IndirectObject<PageTreeNode> parentReference) : base()
         {
+            internalDictionary[ParentKey] = parentReference ?? throw new ArgumentNullException(nameof(parentReference));
         }
 
         /// <summary>
